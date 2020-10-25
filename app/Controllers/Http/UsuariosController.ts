@@ -60,7 +60,7 @@ export default class UsuarioController {
       }
     } catch (error) {
       if (getErroValidacao(error) === 'exists') {
-        return response.status(401).json({ mensagem: 'Email não cadastrado' })
+        return response.status(401).json({ mensagem: 'E-mail não cadastrado' })
       }
 
       return response.status(401).badRequest({ mensagem: 'Erro ao fazer login' })

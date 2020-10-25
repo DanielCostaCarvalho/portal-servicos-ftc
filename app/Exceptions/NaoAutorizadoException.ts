@@ -26,9 +26,7 @@ export default class NaoAutorizadoException extends Exception {
     response
       .status(error.status)
       .json({
-        error_status: this.status,
-        error_code: this.code,
-        error_message: this.message.split(': ')[1],
+        mensagem: this.message.split(': ')[1],
       })
   }
 }

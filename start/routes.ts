@@ -24,5 +24,9 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.post('cadastro', 'UsuarioController.cadastro')
-Route.post('autenticacao', 'UsuarioController.login')
+Route.post('cadastro', 'UsuariosController.cadastro')
+Route.post('autenticacao', 'UsuariosController.login')
+
+Route.group(() => {
+  Route.post('unidades', 'UnidadesController.cadastro')
+}).prefix('master').middleware(['jwt', 'master'])

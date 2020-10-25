@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import Env from '@ioc:Adonis/Core/Env'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import Usuario from 'App/Models/Usuario'
 
@@ -18,6 +19,29 @@ export const gerarTokenJWT = (usuario: Usuario) => {
   return token
 }
 
+export const verificarUsuarioMaster = (usuario: Usuario, {response }: HttpContextContract) => {
+  if(usuario.tipo === 'Master') {
+    return true
+  }
+
+  return response.unauthorized()
+}
+
 export const getErroValidacao = (error) => {
   return error.messages && error.messages.errors && error.messages.errors[0].rule
+}
+
+export const getCampoErroValidacao = (error) => {
+  return error.messages && error.messages.errors && error.messages.errors[0].field
+}
+
+export const formatarErroCampoObrigatorio = (campoErro) => {
+  return { mensagem: `${capitalize(campoErro)} não informado` }
+}
+
+const capitalize = (s) => {
+  if (typeof s !== 'string') {
+    return ''
+  }
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }

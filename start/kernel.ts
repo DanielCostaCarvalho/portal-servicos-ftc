@@ -41,5 +41,6 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
-  jwt: 'App/Middleware/CheckJwt',
+  jwt: 'App/Middleware/ValidarJwt',
+  master: 'App/Middleware/ValidarUsuarioMaster',
 })
