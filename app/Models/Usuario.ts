@@ -7,13 +7,13 @@ export default class Usuario extends BaseModel {
   public id: number
 
   @column()
-  public nome
+  public nome: string
 
   @column({})
-  public email
+  public email: string
 
   @column({})
-  public senha
+  public senha: string
 
   @beforeSave()
   public static async hashPassword (usuario: Usuario) {
@@ -23,7 +23,7 @@ export default class Usuario extends BaseModel {
   }
 
   @column()
-  public tipo
+  public tipo: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
