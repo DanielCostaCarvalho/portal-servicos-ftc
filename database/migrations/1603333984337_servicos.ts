@@ -7,7 +7,7 @@ export default class Servicos extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('nome', 60).notNullable()
-      table.foreign('id_categoria').references('id').inTable('categorias').notNullable()
+      table.integer('id_categoria').unsigned().references('id').inTable('categorias').notNullable()
       table.timestamps(true)
     })
   }

@@ -7,8 +7,8 @@ export default class Categorias extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('nome', 60).notNullable()
-      table.foreign('id_coordenador').references('id').inTable('usuarios')
-      table.foreign('id_unidade').references('id').inTable('unidades').notNullable()
+      table.integer('id_coordenador').unsigned().references('id').inTable('usuarios')
+      table.integer('id_unidade').unsigned().references('id').inTable('unidades').notNullable()
       table.timestamps(true)
     })
   }

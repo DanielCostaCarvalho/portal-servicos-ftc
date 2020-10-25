@@ -6,8 +6,8 @@ export default class ProfessorServicos extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.foreign('id_servico').references('id').inTable('servicos').notNullable()
-      table.foreign('id_professor').references('id').inTable('usuarios').notNullable()
+      table.integer('id_servico').unsigned().references('id').inTable('servicos').notNullable()
+      table.integer('id_professor').unsigned().references('id').inTable('usuarios').notNullable()
       table.timestamps(true)
     })
   }

@@ -10,9 +10,9 @@ export default class Postagens extends BaseSchema {
       table.text('mensagem').notNullable()
       table.boolean('ativa').defaultTo(true)
       table.dateTime('data_expiracao')
-      table.foreign('id_categoria').references('id').inTable('categorias')
-      table.foreign('id_unidade').references('id').inTable('unidades').notNullable()
-      table.foreign('id_usuario').references('id').inTable('usuarios')
+      table.integer('id_categoria').unsigned().references('id').inTable('categorias')
+      table.integer('id_unidade').unsigned().references('id').inTable('unidades').notNullable()
+      table.integer('id_usuario').unsigned().references('id').inTable('usuarios')
       table.timestamps(true)
     })
   }

@@ -7,7 +7,7 @@ export default class Unidades extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('nome', 80).notNullable()
-      table.foreign('id_diretor').references('id').inTable('usuarios')
+      table.integer('id_diretor').unsigned().references('id').inTable('usuarios')
       table.timestamps(true)
     })
   }
