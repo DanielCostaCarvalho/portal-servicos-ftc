@@ -18,6 +18,6 @@ export default class Unidade extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Usuario)
+  @belongsTo(() => Usuario, {foreignKey: 'id_diretor'})
   public diretor: BelongsTo<typeof Usuario>
 }

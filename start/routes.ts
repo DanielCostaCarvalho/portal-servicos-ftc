@@ -29,4 +29,5 @@ Route.post('autenticacao', 'UsuariosController.login')
 
 Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
+  Route.get('unidades', 'UnidadesController.getUnidadesMaster')
 }).prefix('master').middleware(['jwt', 'master'])

@@ -20,7 +20,7 @@ export default class UnidadesController {
 
       const diretor = await Usuario.find(request.input('id_diretor'))
 
-      if(diretor?.tipo !== '') {
+      if(diretor?.tipo !== 'Diretor') {
         return response.status(401).json({
           'mensagem': 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
         })
@@ -40,5 +40,11 @@ export default class UnidadesController {
 
       return response.badRequest({ error })
     }
+  }
+
+  public async getUnidadesMaster () {
+    return await Unidade.query().select(['id', 'nome', 'id_diretor']).preload('diretor', (query) => {
+      query.select(['id', 'nome'])
+    })
   }
 }
