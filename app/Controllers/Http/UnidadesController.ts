@@ -42,10 +42,14 @@ export default class UnidadesController {
     }
   }
 
-  public async getUnidadesMaster () {
-    return await Unidade.query().select(['id', 'nome', 'id_diretor']).preload('diretor', (query) => {
-      query.select(['id', 'nome'])
-    })
+  public async getUnidadesMaster ({ response }: HttpContextContract) {
+    try {
+      return await Unidade.query().select(['id', 'nome', 'id_diretor']).preload('diretor', (query) => {
+        query.select(['id', 'nome'])
+      })
+    } catch (error) {
+      return response.badRequest({ error })
+    }
   }
 
   public async atualizacao ({ request, response, params }: HttpContextContract) {
@@ -79,6 +83,24 @@ export default class UnidadesController {
       unidade.save()
 
       return response.status(201).json({ mensagem: 'Unidade atualizada com sucesso' })
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
+  public async deletar ({ response, params }: HttpContextContract) {
+    try {
+      const unidade = await Unidade.find(params.id)
+
+      if(!unidade) {
+        return response.status(401).json({
+          'mensagem': 'Unidade não encontrada',
+        })
+      }
+
+      await unidade.delete()
+
+      return response.status(201).json({ mensagem: 'Unidade deletada com sucesso' })
     } catch (error) {
       return response.badRequest({ error })
     }

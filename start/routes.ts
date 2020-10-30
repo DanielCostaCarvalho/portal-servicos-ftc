@@ -31,4 +31,5 @@ Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
   Route.get('unidades', 'UnidadesController.getUnidadesMaster')
   Route.put('unidades/:id', 'UnidadesController.atualizacao')
+  Route.delete('unidades/:id', 'UnidadesController.deletar')
 }).prefix('master').middleware(['jwt', 'master'])
