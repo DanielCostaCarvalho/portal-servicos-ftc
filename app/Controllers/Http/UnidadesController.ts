@@ -47,4 +47,40 @@ export default class UnidadesController {
       query.select(['id', 'nome'])
     })
   }
+
+  public async atualizacao ({ request, response, params }: HttpContextContract) {
+    try {
+      const data = request.only(['nome', 'id_diretor'])
+
+      const unidade = await Unidade.find(params.id)
+
+      if(!unidade) {
+        return response.status(401).json({
+          'mensagem': 'Unidade não encontrada',
+        })
+      }
+
+      if(data.nome) {
+        unidade.nome = data.nome
+      }
+
+      if(data.id_diretor) {
+        const diretor = await Usuario.find(data.id_diretor)
+
+        if(diretor?.tipo !== 'Diretor') {
+          return response.status(401).json({
+            'mensagem': 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
+          })
+        }
+
+        unidade.id_diretor = data.id_diretor
+      }
+
+      unidade.save()
+
+      return response.status(201).json({ mensagem: 'Unidade atualizada com sucesso' })
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
 }
