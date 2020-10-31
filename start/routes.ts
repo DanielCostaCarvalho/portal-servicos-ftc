@@ -52,4 +52,6 @@ Route.group(() => {
   Route.post('servicos', 'ServicosController.cadastro')
   Route.put('servicos/:id', 'ServicosController.atualizacao')
   Route.delete('servicos/:id', 'ServicosController.deletar')
+  Route.post('servicos/:idServico/professores/:idProfessor', 'ServicosController.vincularProfessorServico')
+  Route.delete('servicos/:idServico/professores/:idProfessor', 'ServicosController.desvincularProfessorServico')
 }).prefix('coordenador').middleware(['jwt', 'coordenador'])

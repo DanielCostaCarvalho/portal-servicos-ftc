@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Categoria from 'App/Models/Categoria'
+import ProfessorServico from 'App/Models/ProfessorServico'
 import Servico from 'App/Models/Servico'
 import Usuario from 'App/Models/Usuario'
 import {
@@ -30,11 +31,14 @@ export default class ServicosController {
         })
       }
 
-      const servicos = await Servico.query().select(['id', 'nome'])
-        .where('id_categoria', params.idCategoria)
+      const servicos = await Servico.query().select(['servicos.id', 'servicos.nome'])
+        .where('id_categoria', params.idCategoria).preload('professores', (query) => {
+          query.select(['id', 'nome'])
+        })
 
       return servicos
     } catch (error) {
+      console.log(error)
       return response.badRequest({ error })
     }
   }
@@ -55,13 +59,46 @@ export default class ServicosController {
               },
             }),
           ]),
+          ids_professores: schema.array().members(schema.number([
+            rules.exists({
+              table: 'usuarios',
+              column: 'id',
+              where: {
+                'tipo': 'Professor',
+              },
+            }),
+          ])),
         }),
         messages: {
           'id_categoria.exists': 'Categoria não encontrada',
+          'ids_professores.array': 'Não foi informado um array em ids_professores',
+          '*': (field, rule) => {
+            const [campo] = field.split('.')
+
+            if(campo === 'ids_professores' && rule === 'number') {
+              return 'O array de ids_professores precisa pode conter apenas números'
+            }
+
+            if(campo === 'ids_professores' && rule === 'exists') {
+              return 'Um dos professores informados não foi encontrado'
+            }
+
+            return ''
+          },
         },
       })
 
-      await Servico.create({...dadosCadastro})
+      const servico = await Servico.create({
+        nome: dadosCadastro.nome,
+        id_categoria: dadosCadastro.id_categoria,
+      })
+
+      await Promise.all(dadosCadastro.ids_professores.map(async idProfessor => {
+        await ProfessorServico.create({
+          id_professor: idProfessor,
+          id_servico: servico.id,
+        })
+      }))
 
       return response.status(201).json({ mensagem: 'Serviço criado com sucesso' })
     } catch (error) {
@@ -173,6 +210,117 @@ export default class ServicosController {
 
       return response.status(201).json({ mensagem: 'Serviço deletado com sucesso' })
     } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
+  public async vincularProfessorServico ({ response, params }: HttpContextContract) {
+    try {
+      const usuario = await Usuario.find(params.idProfessor)
+
+      if(!usuario) {
+        return response.status(401).json({
+          'mensagem': 'Professor não encontrado',
+        })
+      }
+
+      if(usuario.tipo !== 'Professor') {
+        return response.status(401).json({
+          'mensagem': 'Usuário informado não é um professor',
+        })
+      }
+
+      const servico = await Servico.find(params.idServico)
+
+      if(!servico) {
+        return response.status(401).json({
+          'mensagem': 'Serviço não encontrado',
+        })
+      }
+
+      const professorServico = await ProfessorServico.query()
+        .where('id_servico', servico.id)
+        .where('id_professor', usuario.id)
+        .first()
+
+      if(professorServico) {
+        return response.status(401).json({
+          'mensagem': 'Professor já estava vinculado ao serviço',
+        })
+      }
+
+      await ProfessorServico.create({
+        id_professor: usuario.id,
+        id_servico: servico.id,
+      })
+
+      return response.status(201).json({ mensagem: 'Professor vinculado ao serviço com sucesso' })
+    } catch (error) {
+      if (getErroValidacao(error) === 'required') {
+        const campoErro = getCampoErroValidacao(error)
+
+        const erro = formatarErroCampoObrigatorio(campoErro)
+
+        return response.status(401).json(erro)
+      }
+
+      if(existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
+      return response.badRequest({ error })
+    }
+  }
+
+  public async desvincularProfessorServico ({ response, params }: HttpContextContract) {
+    try {
+      const usuario = await Usuario.find(params.idProfessor)
+
+      if(!usuario) {
+        return response.status(401).json({
+          'mensagem': 'Professor não encontrado',
+        })
+      }
+
+      const servico = await Servico.find(params.idServico)
+
+      if(!servico) {
+        return response.status(401).json({
+          'mensagem': 'Serviço não encontrado',
+        })
+      }
+
+      const professorServico = await ProfessorServico.query()
+        .where('id_servico', servico.id)
+        .where('id_professor', usuario.id)
+        .first()
+
+      if(!professorServico) {
+        return response.status(401).json({
+          'mensagem': 'O Professor não está vinculado ao serviço',
+        })
+      }
+
+      await professorServico.delete()
+
+      return response.status(201).json({ mensagem: 'Professor desvinculado do serviço com sucesso' })
+    } catch (error) {
+      if (getErroValidacao(error) === 'required') {
+        const campoErro = getCampoErroValidacao(error)
+
+        const erro = formatarErroCampoObrigatorio(campoErro)
+
+        return response.status(401).json(erro)
+      }
+
+      if(existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
       return response.badRequest({ error })
     }
   }
