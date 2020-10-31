@@ -52,6 +52,28 @@ export default class UnidadesController {
     }
   }
 
+  public async getUnidadeId ({ response, params }: HttpContextContract) {
+    try {
+      const unidade = await Unidade.query()
+        .where('id', params.id)
+        .select(['id', 'nome', 'id_diretor'])
+        .preload('diretor', (query) => {
+          query.select(['id', 'nome'])
+        })
+        .first()
+
+      if(!unidade) {
+        return response.status(401).json({
+          'mensagem': 'Unidade não encontrada',
+        })
+      }
+
+      return unidade
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async atualizacao ({ request, response, params }: HttpContextContract) {
     try {
       const data = request.only(['nome', 'id_diretor'])

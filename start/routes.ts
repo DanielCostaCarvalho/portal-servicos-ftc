@@ -30,6 +30,7 @@ Route.post('autenticacao', 'UsuariosController.login')
 Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
   Route.get('unidades', 'UnidadesController.getUnidadesMaster')
+  Route.get('unidades/:id', 'UnidadesController.getUnidadeId')
   Route.put('unidades/:id', 'UnidadesController.atualizacao')
   Route.delete('unidades/:id', 'UnidadesController.deletar')
   Route.get('unidades/:idUnidade/categorias', 'CategoriasController.categoriasUnidadeMaster')
