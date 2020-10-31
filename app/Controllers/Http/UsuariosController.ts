@@ -82,6 +82,25 @@ export default class UsuarioController {
     }
   }
 
+  public async getUsuarioId ({ response, params }: HttpContextContract) {
+    try {
+      const usuario = await Usuario.query()
+        .where('id', params.id)
+        .select(['id', 'nome', 'email', 'tipo'])
+        .first()
+
+      if(!usuario) {
+        return response.status(401).json({
+          'mensagem': 'Usuário não encontrado',
+        })
+      }
+
+      return usuario
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async listagemPorTipo ({ response, params }: HttpContextContract) {
     try {
       const tipo = capitalize(params.tipo)
