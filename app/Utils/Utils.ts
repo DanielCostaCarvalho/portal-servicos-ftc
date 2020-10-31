@@ -49,7 +49,7 @@ export const formatarErroCampoObrigatorio = (campoErro) => {
   return { mensagem: `${capitalize(campoErro)} não informado` }
 }
 
-const capitalize = (s) => {
+export const capitalize = (s) => {
   if (typeof s !== 'string') {
     return ''
   }

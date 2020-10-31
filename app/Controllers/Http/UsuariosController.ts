@@ -1,7 +1,14 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Usuario from 'App/Models/Usuario'
 import { rules, schema } from '@ioc:Adonis/Core/Validator'
-import { existeErroValidacao, gerarTokenJWT, getErroValidacao, getMensagemErro } from 'App/Utils/Utils'
+import {
+  existeErroValidacao,
+  gerarTokenJWT,
+  getErroValidacao,
+  getMensagemErro,
+  capitalize,
+}
+  from 'App/Utils/Utils'
 import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class UsuarioController {
@@ -71,6 +78,27 @@ export default class UsuarioController {
     try {
       return await Usuario.query().select(['id', 'nome', 'email', 'tipo'])
     } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
+  public async listagemPorTipo ({ response, params }: HttpContextContract) {
+    try {
+      const tipo = capitalize(params.tipo)
+
+      const tipos = ['Cliente', 'Diretor', 'Coordenador', 'Master', 'Professor']
+
+      if(!tipos.includes(tipo)) {
+        return response.status(401).json({
+          'mensagem': 'O tipo de usuário informado não foi reconhecido',
+        })
+      }
+
+      return await Usuario.query()
+        .select(['id', 'nome', 'email', 'tipo'])
+        .where('tipo', tipo)
+    } catch (error) {
+      console.log(error)
       return response.badRequest({ error })
     }
   }
