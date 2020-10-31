@@ -19,7 +19,8 @@ export default class CategoriasController {
       }
 
       const categorias = await Categoria.query().select(['id', 'nome', 'id_coordenador'])
-        .where('id_unidade', idUnidade).preload('coordenador', (query) => {
+        .where('id_unidade', idUnidade)
+        .preload('coordenador', (query) => {
           query.select(['id', 'nome'])
         })
 
@@ -151,6 +152,28 @@ export default class CategoriasController {
         .where('id_coordenador', usuario.id)
 
       return categorias
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
+  public async getCategoriaId ({ response, params }: HttpContextContract) {
+    try {
+      const categoria = await Categoria.query()
+        .where('id', params.id)
+        .select(['id', 'nome', 'id_coordenador'])
+        .preload('coordenador', (query) => {
+          query.select(['id', 'nome'])
+        })
+        .first()
+
+      if(!categoria) {
+        return response.status(401).json({
+          'mensagem': 'Categoria não encontrada',
+        })
+      }
+
+      return categoria
     } catch (error) {
       return response.badRequest({ error })
     }
