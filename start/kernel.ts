@@ -43,4 +43,8 @@ Server.middleware.register([
 Server.middleware.registerNamed({
   jwt: 'App/Middleware/ValidarJwt',
   master: 'App/Middleware/ValidarUsuarioMaster',
+  coordenador: 'App/Middleware/ValidarUsuarioCoordenador',
+  professor: 'App/Middleware/ValidarUsuarioProfessor',
+  diretor: 'App/Middleware/ValidarUsuarioDiretor',
+  cliente: 'App/Middleware/ValidarUsuarioCliente',
 })
