@@ -40,4 +40,8 @@ Route.group(() => {
   Route.post('postagens', 'PostagensController.cadastroMaster')
   Route.put('postagens/:id', 'PostagensController.atualizacaoMaster')
   Route.delete('postagens/:id', 'PostagensController.deletarMaster')
+  Route.get('usuarios', 'UsuariosController.listagem')
+  Route.post('usuarios', 'UsuariosController.cadastroMaster')
+  Route.put('usuarios/:id', 'UsuariosController.atualizarMaster')
+  Route.delete('usuarios/:id', 'UsuariosController.deletarMaster')
 }).prefix('master').middleware(['jwt', 'master'])
