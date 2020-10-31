@@ -5,11 +5,13 @@ import Unidade from './Unidade'
 import Categoria from './Categoria'
 
 export default class Postagem extends BaseModel {
+  public static table = 'postagens'
+
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public nome: string
+  public titulo: string
 
   @column()
   public mensagem: string

@@ -35,6 +35,16 @@ export const getCampoErroValidacao = (error) => {
   return error.messages && error.messages.errors && error.messages.errors[0].field
 }
 
+export const getMensagemErro = (error) => {
+  const erro = error.messages && error.messages.errors && error.messages.errors[0].message
+
+  return { mensagem: erro }
+}
+
+export const existeErroValidacao = (error) => {
+  return error.messages && error.messages.errors.length > 0
+}
+
 export const formatarErroCampoObrigatorio = (campoErro) => {
   return { mensagem: `${capitalize(campoErro)} não informado` }
 }

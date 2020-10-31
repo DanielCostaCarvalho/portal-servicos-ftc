@@ -6,7 +6,7 @@ export default class Postagens extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('nome', 80).notNullable()
+      table.string('titulo', 80).notNullable()
       table.text('mensagem').notNullable()
       table.boolean('ativa').defaultTo(true)
       table.dateTime('data_expiracao')
