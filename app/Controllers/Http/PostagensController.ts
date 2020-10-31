@@ -33,7 +33,6 @@ export default class PostagensController {
 
       return categorias
     } catch (error) {
-      console.log(error)
       return response.badRequest({ error })
     }
   }

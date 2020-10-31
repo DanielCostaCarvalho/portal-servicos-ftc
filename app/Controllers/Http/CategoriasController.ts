@@ -142,4 +142,17 @@ export default class CategoriasController {
       return response.badRequest({ error })
     }
   }
+
+  public async categoriasCoordenador ({ request, response }: HttpContextContract) {
+    try {
+      const usuario: Usuario = request.input('usuario')
+
+      const categorias = await Categoria.query().select(['id', 'nome'])
+        .where('id_coordenador', usuario.id)
+
+      return categorias
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
 }

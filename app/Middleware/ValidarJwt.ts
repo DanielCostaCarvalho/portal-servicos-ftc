@@ -25,7 +25,7 @@ export default class ValidarJwt {
       const usuario = await Usuario.findByOrFail('id', payload.usuario)
 
       request.updateBody({ ...{ usuario }, ...request.all() })
-    } catch {
+    } catch(error) {
       throw new NaoAutorizadoException('Token inválido')
     }
 

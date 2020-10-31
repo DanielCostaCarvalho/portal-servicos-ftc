@@ -45,3 +45,11 @@ Route.group(() => {
   Route.put('usuarios/:id', 'UsuariosController.atualizarMaster')
   Route.delete('usuarios/:id', 'UsuariosController.deletarMaster')
 }).prefix('master').middleware(['jwt', 'master'])
+
+Route.group(() => {
+  Route.get('categorias', 'CategoriasController.categoriasCoordenador')
+  Route.get('categorias/:idCategoria/servicos', 'ServicosController.servicosCoordenador')
+  Route.post('servicos', 'ServicosController.cadastro')
+  Route.put('servicos/:id', 'ServicosController.atualizacao')
+  Route.delete('servicos/:id', 'ServicosController.deletar')
+}).prefix('coordenador').middleware(['jwt', 'coordenador'])
