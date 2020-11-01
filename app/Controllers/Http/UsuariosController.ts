@@ -173,7 +173,7 @@ export default class UsuarioController {
           ...(data.email !== undefined && {email: schema.string({}, [
             rules.email(),
           ])}),
-          ...(data.email !== undefined && {
+          ...(data.senha !== undefined && {
             senha: schema.string({}, [
               rules.minLength(6),
             ]),
