@@ -161,8 +161,11 @@ export default class CategoriasController {
     try {
       const categoria = await Categoria.query()
         .where('id', params.id)
-        .select(['id', 'nome', 'id_coordenador'])
+        .select(['id', 'nome', 'id_coordenador', 'id_unidade'])
         .preload('coordenador', (query) => {
+          query.select(['id', 'nome'])
+        })
+        .preload('unidade', (query) => {
           query.select(['id', 'nome'])
         })
         .first()
