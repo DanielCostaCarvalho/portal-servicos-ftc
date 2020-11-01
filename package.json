@@ -5,15 +5,20 @@
   "scripts": {
     "build": "node ace build",
     "start": "node ace serve --watch",
-    "lint": "eslint . --ext=.ts"
+    "lint": "eslint . --ext=.ts",
+    "commit": "cz"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^2.1.5",
     "@types/jsonwebtoken": "^8.5.0",
     "adonis-preset-ts": "^1.0.4",
+    "commitizen": "^4.2.2",
     "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-adonis": "^1.0.15",
+    "eslint-plugin-prettier": "^3.1.4",
     "pino-pretty": "^4.3.0",
+    "prettier": "^2.1.2",
     "typescript": "^4.0.3",
     "youch": "^2.1.1",
     "youch-terminal": "^1.0.1"
