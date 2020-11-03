@@ -48,7 +48,9 @@ Route.group(() => {
   Route.get('usuarios/:id', 'UsuariosController.getUsuarioId')
   Route.put('usuarios/:id', 'UsuariosController.atualizarMaster')
   Route.delete('usuarios/:id', 'UsuariosController.deletarMaster')
-}).prefix('master').middleware(['jwt', 'master'])
+})
+  .prefix('master')
+  .middleware(['jwt', 'master'])
 
 Route.group(() => {
   Route.get('categorias', 'CategoriasController.categoriasCoordenador')
@@ -56,6 +58,15 @@ Route.group(() => {
   Route.post('servicos', 'ServicosController.cadastro')
   Route.put('servicos/:id', 'ServicosController.atualizacao')
   Route.delete('servicos/:id', 'ServicosController.deletar')
-  Route.post('servicos/:idServico/professores/:idProfessor', 'ServicosController.vincularProfessorServico')
-  Route.delete('servicos/:idServico/professores/:idProfessor', 'ServicosController.desvincularProfessorServico')
-}).prefix('coordenador').middleware(['jwt', 'coordenador'])
+  Route.post(
+    'servicos/:idServico/professores/:idProfessor',
+    'ServicosController.vincularProfessorServico'
+  )
+  Route.delete(
+    'servicos/:idServico/professores/:idProfessor',
+    'ServicosController.desvincularProfessorServico'
+  )
+  Route.post('servicos/:idServico/agendamentos', 'AgendasController.coordenadorAbrir')
+})
+  .prefix('coordenador')
+  .middleware(['jwt', 'coordenador'])
