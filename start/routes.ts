@@ -70,3 +70,9 @@ Route.group(() => {
 })
   .prefix('coordenador')
   .middleware(['jwt', 'coordenador'])
+
+Route.group(() => {
+  Route.post('servicos/:idServico/agendamentos', 'AgendasController.professorAbrir')
+})
+  .prefix('professor')
+  .middleware(['jwt', 'professor'])
