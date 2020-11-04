@@ -36,52 +36,52 @@ Tente executar os comandos no GitBash
 
 Para se autenticar na API
 
-- [ ] POST ​/autenticacao
-- [ ] POST ​/cadastro
+- [x] POST ​/autenticacao
+- [x] POST ​/cadastro
 
 ## Administrador master
 
-- [ ] POST ​/master​/unidades
+- [x] POST ​/master​/unidades
 
-- [ ] GET ​/master​/unidades
+- [x] GET ​/master​/unidades
 
-- [ ] GET ​/master​/unidades​/{idunidade}
+- [x] GET ​/master​/unidades​/{idunidade}
 
-- [ ] PUT ​/master​/unidades​/{idunidade}
+- [x] PUT ​/master​/unidades​/{idunidade}
 
-- [ ] DELETE ​/master​/unidades​/{idunidade}
+- [x] DELETE ​/master​/unidades​/{idunidade}
 
-- [ ] GET ​/master​/unidades​/{idunidade}​/categorias
+- [x] GET ​/master​/unidades​/{idunidade}​/categorias
 
-- [ ] POST ​/master​/categorias
+- [x] POST ​/master​/categorias
 
-- [ ] GET ​/master​/categorias​/{idcategoria}
+- [x] GET ​/master​/categorias​/{idcategoria}
 
-- [ ] PUT ​/master​/categorias​/{idcategoria}
+- [x] PUT ​/master​/categorias​/{idcategoria}
 
-- [ ] DELETE ​/master​/categorias​/{idcategoria}
+- [x] DELETE ​/master​/categorias​/{idcategoria}
 
-- [ ] GET ​/master​/unidades​/{idunidade}​/postagens
+- [x] GET ​/master​/unidades​/{idunidade}​/postagens
 
-- [ ] POST ​/master​/postagens
+- [x] POST ​/master​/postagens
 
-- [ ] GET ​/master​/postagens​/{idpostagem}
+- [x] GET ​/master​/postagens​/{idpostagem}
 
-- [ ] PUT ​/master​/postagens​/{idpostagem}
+- [x] PUT ​/master​/postagens​/{idpostagem}
 
-- [ ] DELETE ​/master​/postagens​/{idpostagem}
+- [x] DELETE ​/master​/postagens​/{idpostagem}
 
-- [ ] GET ​/master​/usuarios
+- [x] GET ​/master​/usuarios
 
-- [ ] POST ​/master​/usuarios
+- [x] POST ​/master​/usuarios
 
-- [ ] GET ​/master​/usuarios​/{idusuario}
+- [x] GET ​/master​/usuarios​/{idusuario}
 
-- [ ] PUT ​/master​/usuarios​/{idusuario}
+- [x] PUT ​/master​/usuarios​/{idusuario}
 
-- [ ] DELETE ​/master​/usuarios​/{idusuario}
+- [x] DELETE ​/master​/usuarios​/{idusuario}
 
-- [ ] GET ​/master​/usuarios​/{tipousuario}
+- [x] GET ​/master​/usuarios​/{tipousuario}
 
 ## Cliente/Paciente
 
@@ -98,19 +98,19 @@ Para se autenticar na API
 
 ## Coordenador
 
-- [ ] GET ​/coordenador​/categorias
+- [x] GET ​/coordenador​/categorias
 
-- [ ] GET ​/coordenador​/categorias​/{idcategoria}​/servicos
+- [x] GET ​/coordenador​/categorias​/{idcategoria}​/servicos
 
-- [ ] POST ​/coordenador​/servicos​/{idservico}
+- [x] POST ​/coordenador​/servicos​/{idservico}
 
-- [ ] PUT ​/coordenador​/servicos​/{idservico}
+- [x] PUT ​/coordenador​/servicos​/{idservico}
 
-- [ ] DELETE ​/coordenador​/servicos​/{idservico}
+- [x] DELETE ​/coordenador​/servicos​/{idservico}
 
-- [ ] POST ​/coordenador​/servicos​/{idservico}​/professores​/{idprofessor}
+- [x] POST ​/coordenador​/servicos​/{idservico}​/professores​/{idprofessor}
 
-- [ ] DELETE ​/coordenador​/servicos​/{idservico}​/professores​/{idprofessor}
+- [x] DELETE ​/coordenador​/servicos​/{idservico}​/professores​/{idprofessor}
 
 - [x] POST ​/coordenador​/servicos​/{idservico}​/agendamentos
 
