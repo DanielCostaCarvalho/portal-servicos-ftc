@@ -40,6 +40,7 @@ Route.group(() => {
   Route.delete('categorias/:id', 'CategoriasController.deletar')
   Route.get('unidades/:idUnidade/postagens', 'PostagensController.postagensUnidadeMaster')
   Route.post('postagens', 'PostagensController.cadastroMaster')
+  Route.get('postagens/:id', 'PostagensController.getPostagemId')
   Route.put('postagens/:id', 'PostagensController.atualizacaoMaster')
   Route.delete('postagens/:id', 'PostagensController.deletarMaster')
   Route.get('usuarios', 'UsuariosController.listagem')

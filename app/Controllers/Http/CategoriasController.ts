@@ -3,22 +3,27 @@ import { schema } from '@ioc:Adonis/Core/Validator'
 import Categoria from 'App/Models/Categoria'
 import Unidade from 'App/Models/Unidade'
 import Usuario from 'App/Models/Usuario'
-import { formatarErroCampoObrigatorio, getCampoErroValidacao, getErroValidacao } from 'App/Utils/Utils'
+import {
+  formatarErroCampoObrigatorio,
+  getCampoErroValidacao,
+  getErroValidacao,
+} from 'App/Utils/Utils'
 
 export default class CategoriasController {
-  public async categoriasUnidadeMaster ({ response, params }: HttpContextContract) {
+  public async categoriasUnidadeMaster({ response, params }: HttpContextContract) {
     try {
       const idUnidade = params.idUnidade
 
       const unidade = await Unidade.find(idUnidade)
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 
-      const categorias = await Categoria.query().select(['id', 'nome', 'id_coordenador'])
+      const categorias = await Categoria.query()
+        .select(['id', 'nome', 'id_coordenador'])
         .where('id_unidade', idUnidade)
         .preload('coordenador', (query) => {
           query.select(['id', 'nome'])
@@ -30,7 +35,7 @@ export default class CategoriasController {
     }
   }
 
-  public async cadastro ({ request, response }: HttpContextContract) {
+  public async cadastro({ request, response }: HttpContextContract) {
     try {
       const dadosCadastro = await request.validate({
         schema: schema.create({
@@ -42,27 +47,28 @@ export default class CategoriasController {
 
       const usuario = await Usuario.find(request.input('id_coordenador'))
 
-      if(!usuario) {
+      if (!usuario) {
         return response.status(401).json({
-          'mensagem': 'Coordenador não encontrado',
+          mensagem: 'Coordenador não encontrado',
         })
       }
 
-      if(usuario?.tipo !== 'Coordenador') {
+      if (usuario?.tipo !== 'Coordenador') {
         return response.status(401).json({
-          'mensagem': 'Usuário escolhido para coordenador da categoria não tem essa função cadastrada',
+          mensagem:
+            'Usuário escolhido para coordenador da categoria não tem essa função cadastrada',
         })
       }
 
       const unidade = await Unidade.find(request.input('id_unidade'))
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 
-      await Categoria.create({...dadosCadastro})
+      await Categoria.create({ ...dadosCadastro })
 
       return response.status(201).json({ mensagem: 'Categoria criada com sucesso' })
     } catch (error) {
@@ -78,40 +84,41 @@ export default class CategoriasController {
     }
   }
 
-  public async atualizacao ({ request, response, params }: HttpContextContract) {
+  public async atualizacao({ request, response, params }: HttpContextContract) {
     try {
       const data = request.only(['nome', 'id_coordenador', 'id_unidade'])
 
       const categoria = await Categoria.find(params.id)
 
-      if(!categoria) {
+      if (!categoria) {
         return response.status(401).json({
-          'mensagem': 'Categoria não encontrada',
+          mensagem: 'Categoria não encontrada',
         })
       }
 
-      if(data.nome) {
+      if (data.nome) {
         categoria.nome = data.nome
       }
 
-      if(data.id_coordenador) {
+      if (data.id_coordenador) {
         const usuario = await Usuario.find(data.id_coordenador)
 
-        if(usuario?.tipo !== 'Coordenador') {
+        if (usuario?.tipo !== 'Coordenador') {
           return response.status(401).json({
-            'mensagem': 'Usuário escolhido para coordenador da categoria não tem essa função cadastrada',
+            mensagem:
+              'Usuário escolhido para coordenador da categoria não tem essa função cadastrada',
           })
         }
 
         categoria.id_coordenador = data.id_coordenador
       }
 
-      if(data.id_unidade) {
+      if (data.id_unidade) {
         const unidade = await Unidade.find(data.id_unidade)
 
-        if(!unidade) {
+        if (!unidade) {
           return response.status(401).json({
-            'mensagem': 'Unidade não encontrada',
+            mensagem: 'Unidade não encontrada',
           })
         }
 
@@ -126,13 +133,13 @@ export default class CategoriasController {
     }
   }
 
-  public async deletar ({ response, params }: HttpContextContract) {
+  public async deletar({ response, params }: HttpContextContract) {
     try {
       const categoria = await Categoria.find(params.id)
 
-      if(!categoria) {
+      if (!categoria) {
         return response.status(401).json({
-          'mensagem': 'Categoria não encontrada',
+          mensagem: 'Categoria não encontrada',
         })
       }
 
@@ -144,11 +151,12 @@ export default class CategoriasController {
     }
   }
 
-  public async categoriasCoordenador ({ request, response }: HttpContextContract) {
+  public async categoriasCoordenador({ request, response }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
 
-      const categorias = await Categoria.query().select(['id', 'nome'])
+      const categorias = await Categoria.query()
+        .select(['id', 'nome'])
         .where('id_coordenador', usuario.id)
 
       return categorias
@@ -157,7 +165,7 @@ export default class CategoriasController {
     }
   }
 
-  public async getCategoriaId ({ response, params }: HttpContextContract) {
+  public async getCategoriaId({ response, params }: HttpContextContract) {
     try {
       const categoria = await Categoria.query()
         .where('id', params.id)
@@ -170,9 +178,9 @@ export default class CategoriasController {
         })
         .first()
 
-      if(!categoria) {
+      if (!categoria) {
         return response.status(401).json({
-          'mensagem': 'Categoria não encontrada',
+          mensagem: 'Categoria não encontrada',
         })
       }
 

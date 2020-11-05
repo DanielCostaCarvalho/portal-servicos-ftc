@@ -6,26 +6,27 @@ import Usuario from 'App/Models/Usuario'
 import Categoria from 'App/Models/Categoria'
 import {
   formatarErroCampoObrigatorio,
-  getCampoErroValidacao, getErroValidacao,
+  getCampoErroValidacao,
+  getErroValidacao,
   getMensagemErro,
   existeErroValidacao,
-}
-  from 'App/Utils/Utils'
+} from 'App/Utils/Utils'
 
 export default class PostagensController {
-  public async postagensUnidadeMaster ({ response, params }: HttpContextContract) {
+  public async postagensUnidadeMaster({ response, params }: HttpContextContract) {
     try {
       const idUnidade = params.idUnidade
 
       const unidade = await Unidade.find(idUnidade)
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 
-      const categorias = await Postagem.query().select(['id', 'titulo', 'mensagem', 'ativa', 'id_categoria'])
+      const categorias = await Postagem.query()
+        .select(['id', 'titulo', 'mensagem', 'ativa', 'id_categoria'])
         .where('id_unidade', idUnidade)
         .preload('categoria', (query) => {
           query.select(['id', 'nome'])
@@ -37,7 +38,7 @@ export default class PostagensController {
     }
   }
 
-  public async cadastroMaster ({ request, response }: HttpContextContract) {
+  public async cadastroMaster({ request, response }: HttpContextContract) {
     try {
       const data = request.only(['id_categoria', 'ativa', 'data_expiracao'])
 
@@ -45,9 +46,7 @@ export default class PostagensController {
         schema: schema.create({
           titulo: schema.string(),
           mensagem: schema.string(),
-          id_categoria: schema.number([
-            rules.exists({ table: 'categorias', column: 'id' }),
-          ]),
+          id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
           ...(data.ativa !== undefined && { ativa: schema.boolean() }),
           ...(data.data_expiracao !== undefined && { data_expiracao: schema.date() }),
         }),
@@ -67,8 +66,8 @@ export default class PostagensController {
         id_unidade: categoria?.id_unidade,
         id_categoria: categoria?.id,
         id_usuario: usuario.id,
-        ativa: data.ativa !== null? true: false,
-        data_expiracao:  data.data_expiracao !== null? data.data_expiracao : null,
+        ativa: data.ativa !== null ? true : false,
+        data_expiracao: data.data_expiracao !== null ? data.data_expiracao : null,
       })
 
       return response.status(201).json({ mensagem: 'Postagem criada com sucesso' })
@@ -84,7 +83,7 @@ export default class PostagensController {
         return response.status(401).json(erro)
       }
 
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
@@ -94,15 +93,15 @@ export default class PostagensController {
     }
   }
 
-  public async atualizacaoMaster ({ request, response, params }: HttpContextContract) {
+  public async atualizacaoMaster({ request, response, params }: HttpContextContract) {
     try {
       const data = request.only(['titulo', 'mensagem', 'id_categoria', 'ativa', 'data_expiracao'])
 
       await request.validate({
         schema: schema.create({
-          ...(data.id_categoria !== undefined && {id_categoria: schema.number([
-            rules.exists({ table: 'categorias', column: 'id' }),
-          ])}),
+          ...(data.id_categoria !== undefined && {
+            id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
+          }),
           ...(data.ativa !== undefined && { ativa: schema.boolean() }),
           ...(data.data_expiracao !== undefined && { data_expiracao: schema.date() }),
         }),
@@ -115,17 +114,17 @@ export default class PostagensController {
 
       const postagem = await Postagem.find(params.id)
 
-      if(!postagem) {
+      if (!postagem) {
         return response.status(401).json({
-          'mensagem': 'Postagem não encontrada',
+          mensagem: 'Postagem não encontrada',
         })
       }
 
-      if(data.titulo) {
+      if (data.titulo) {
         postagem.titulo = data.titulo
       }
 
-      if(data.id_categoria !== undefined) {
+      if (data.id_categoria !== undefined) {
         postagem.id_categoria = data.id_categoria
 
         const categoria = await Categoria.findOrFail(data.id_categoria)
@@ -133,15 +132,15 @@ export default class PostagensController {
         postagem.id_unidade = categoria?.id_unidade
       }
 
-      if(data.mensagem) {
+      if (data.mensagem) {
         postagem.mensagem = data.mensagem
       }
 
-      if(data.ativa !== null && data.ativa !== undefined) {
+      if (data.ativa !== null && data.ativa !== undefined) {
         postagem.ativa = data.ativa
       }
 
-      if(data.data_expiracao !== null && data.data_expiracao !== undefined) {
+      if (data.data_expiracao !== null && data.data_expiracao !== undefined) {
         postagem.data_expiracao = data.data_expiracao
       }
 
@@ -149,7 +148,7 @@ export default class PostagensController {
 
       return response.status(201).json({ mensagem: 'Postagem atualizada com sucesso' })
     } catch (error) {
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
@@ -159,19 +158,46 @@ export default class PostagensController {
     }
   }
 
-  public async deletarMaster ({ response, params }: HttpContextContract) {
+  public async deletarMaster({ response, params }: HttpContextContract) {
     try {
       const postagem = await Postagem.find(params.id)
 
-      if(!postagem) {
+      if (!postagem) {
         return response.status(401).json({
-          'mensagem': 'Postagem não encontrada',
+          mensagem: 'Postagem não encontrada',
         })
       }
 
       await postagem.delete()
 
       return response.status(201).json({ mensagem: 'Postagem deletada com sucesso' })
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
+  public async getPostagemId({ response, params }: HttpContextContract) {
+    try {
+      const postagem = await Postagem.query()
+        .where('id', params.id)
+        .select([
+          'id',
+          'titulo',
+          'mensagem',
+          'ativa',
+          'data_expiracao',
+          'id_unidade',
+          'id_categoria',
+        ])
+        .first()
+
+      if (!postagem) {
+        return response.status(401).json({
+          mensagem: 'Postagem não encontrada',
+        })
+      }
+
+      return postagem
     } catch (error) {
       return response.badRequest({ error })
     }
