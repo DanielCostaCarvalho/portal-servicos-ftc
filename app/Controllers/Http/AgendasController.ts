@@ -230,7 +230,7 @@ export default class AgendasController {
         query.select(['id', 'nome'])
       })
       .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
-      .where('id_professor_responsavel', usuario)
+      .where('id_professor_responsavel', usuario.id)
       .andWhereBetween('data_hora', [
         DateTime.fromISO(data_inicial).toSQLDate(),
         DateTime.fromISO(data_final).toSQLDate(),
