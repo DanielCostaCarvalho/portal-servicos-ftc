@@ -140,7 +140,7 @@ Para se autenticar na API
 
 - [ ] DELETE ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
 
-- [ ] POST ​/professor​/agendamentos
+- [x] POST ​/professor​/agendamentos
 
 ## Diretor
 

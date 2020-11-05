@@ -190,4 +190,49 @@ export default class AgendasController {
         .send({ mensagem: 'Ocorreu um erro interno ao salvar as agendas!' })
     }
   }
+
+  public async professorBuscar({ request, response, params }: HttpContextContract) {
+    const { data_inicial, data_final, usuario } = request.only([
+      'data_inicial',
+      'data_final',
+      'usuario',
+    ])
+
+    const schemaDaRequisicao = schema.create({
+      data_inicial: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+      data_final: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const agendas = await Agenda.query()
+      .preload('cliente', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('professor_responsavel', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('responsavel_cancelamento', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
+      .where('id_professor_responsavel', usuario)
+      .andWhereBetween('data_hora', [data_inicial, data_final])
+
+    return agendas
+  }
 }
