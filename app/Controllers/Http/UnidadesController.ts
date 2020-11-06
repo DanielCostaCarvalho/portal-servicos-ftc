@@ -9,7 +9,7 @@ import {
 } from 'App/Utils/Utils'
 
 export default class UnidadesController {
-  public async cadastro ({ request, response }: HttpContextContract) {
+  public async cadastro({ request, response }: HttpContextContract) {
     try {
       const dadosCadastro = await request.validate({
         schema: schema.create({
@@ -20,13 +20,13 @@ export default class UnidadesController {
 
       const diretor = await Usuario.find(request.input('id_diretor'))
 
-      if(diretor?.tipo !== 'Diretor') {
+      if (diretor?.tipo !== 'Diretor') {
         return response.status(401).json({
-          'mensagem': 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
+          mensagem: 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
         })
       }
 
-      await Unidade.create({...dadosCadastro})
+      await Unidade.create({ ...dadosCadastro })
 
       return response.status(201).json({ mensagem: 'Unidade criada com sucesso' })
     } catch (error) {
@@ -42,17 +42,19 @@ export default class UnidadesController {
     }
   }
 
-  public async getUnidadesMaster ({ response }: HttpContextContract) {
+  public async getUnidadesMaster({ response }: HttpContextContract) {
     try {
-      return await Unidade.query().select(['id', 'nome', 'id_diretor']).preload('diretor', (query) => {
-        query.select(['id', 'nome'])
-      })
+      return await Unidade.query()
+        .select(['id', 'nome', 'id_diretor'])
+        .preload('diretor', (query) => {
+          query.select(['id', 'nome'])
+        })
     } catch (error) {
       return response.badRequest({ error })
     }
   }
 
-  public async getUnidadeId ({ response, params }: HttpContextContract) {
+  public async getUnidadeId({ response, params }: HttpContextContract) {
     try {
       const unidade = await Unidade.query()
         .where('id', params.id)
@@ -62,9 +64,9 @@ export default class UnidadesController {
         })
         .first()
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 
@@ -74,28 +76,28 @@ export default class UnidadesController {
     }
   }
 
-  public async atualizacao ({ request, response, params }: HttpContextContract) {
+  public async atualizacao({ request, response, params }: HttpContextContract) {
     try {
       const data = request.only(['nome', 'id_diretor'])
 
       const unidade = await Unidade.find(params.id)
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 
-      if(data.nome) {
+      if (data.nome) {
         unidade.nome = data.nome
       }
 
-      if(data.id_diretor) {
+      if (data.id_diretor) {
         const diretor = await Usuario.find(data.id_diretor)
 
-        if(diretor?.tipo !== 'Diretor') {
+        if (diretor?.tipo !== 'Diretor') {
           return response.status(401).json({
-            'mensagem': 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
+            mensagem: 'Usuário escolhido para diretor da unidade não tem essa função cadastrada',
           })
         }
 
@@ -110,13 +112,13 @@ export default class UnidadesController {
     }
   }
 
-  public async deletar ({ response, params }: HttpContextContract) {
+  public async deletar({ response, params }: HttpContextContract) {
     try {
       const unidade = await Unidade.find(params.id)
 
-      if(!unidade) {
+      if (!unidade) {
         return response.status(401).json({
-          'mensagem': 'Unidade não encontrada',
+          mensagem: 'Unidade não encontrada',
         })
       }
 

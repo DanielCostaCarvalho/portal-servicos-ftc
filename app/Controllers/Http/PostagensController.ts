@@ -26,7 +26,7 @@ export default class PostagensController {
       }
 
       const categorias = await Postagem.query()
-        .select(['id', 'titulo', 'mensagem', 'ativa', 'id_categoria'])
+        .select(['id', 'titulo', 'mensagem', 'ativa', 'data_expiracao', 'id_categoria'])
         .where('id_unidade', idUnidade)
         .preload('categoria', (query) => {
           query.select(['id', 'nome'])

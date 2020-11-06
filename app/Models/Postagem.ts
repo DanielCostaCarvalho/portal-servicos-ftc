@@ -19,7 +19,7 @@ export default class Postagem extends BaseModel {
   @column()
   public ativa: boolean
 
-  @column.dateTime()
+  @column()
   public data_expiracao: DateTime
 
   @column()
@@ -37,12 +37,12 @@ export default class Postagem extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Categoria, {foreignKey: 'id_categoria'})
+  @belongsTo(() => Categoria, { foreignKey: 'id_categoria' })
   public categoria: BelongsTo<typeof Categoria>
 
-  @belongsTo(() => Unidade, {foreignKey: 'id_unidade'})
+  @belongsTo(() => Unidade, { foreignKey: 'id_unidade' })
   public unidade: BelongsTo<typeof Unidade>
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_usuario'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_usuario' })
   public usuario: BelongsTo<typeof Usuario>
 }
