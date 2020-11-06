@@ -103,7 +103,8 @@ export default class PostagensController {
             id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
           }),
           ...(data.ativa !== undefined && { ativa: schema.boolean() }),
-          ...(data.data_expiracao !== undefined && { data_expiracao: schema.date() }),
+          ...(data.data_expiracao !== undefined &&
+            data.data_expiracao !== null && { data_expiracao: schema.date() }),
         }),
         messages: {
           'id_categoria.exists': 'Categoria não encontrada',
@@ -140,7 +141,7 @@ export default class PostagensController {
         postagem.ativa = data.ativa
       }
 
-      if (data.data_expiracao !== null && data.data_expiracao !== undefined) {
+      if (data.data_expiracao !== undefined) {
         postagem.data_expiracao = data.data_expiracao
       }
 
