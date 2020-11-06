@@ -221,7 +221,7 @@ export default class AgendasController {
 
     const agendas = await Agenda.query()
       .preload('cliente', (query) => {
-        query.select(['id', 'nome'])
+        query.select(['id', 'nome', 'id_professor_responsavel', 'id_responsavel_cancelamento'])
       })
       .preload('professor_responsavel', (query) => {
         query.select(['id', 'nome'])
@@ -237,5 +237,37 @@ export default class AgendasController {
       ])
 
     return agendas
+  }
+
+  public async professorDetalhes({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+    const { idServico, idAgendamento } = params
+
+    const professorServico = await ProfessorServico.query()
+      .where('id_professor', '=', usuario.id)
+      .andWhere('id_servico', '=', idServico)
+      .first()
+
+    if (!professorServico) {
+      return response.forbidden({
+        mensagem: 'O professor não está vinculado a esse serviço',
+      })
+    }
+
+    const agendamento = await Agenda.query()
+      .preload('professor_responsavel')
+      .preload('responsavel_cancelamento')
+      .preload('cliente')
+      .where('id', '=', idAgendamento)
+      .andWhere('id_servico', '=', idServico)
+      .first()
+
+    if (!agendamento) {
+      return response.badRequest({
+        mensagem: 'Não foi encontrado o agendamento com os dados solicitados',
+      })
+    }
+
+    return agendamento
   }
 }

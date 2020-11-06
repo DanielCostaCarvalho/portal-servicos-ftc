@@ -74,6 +74,10 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post('servicos/:idServico/agendamentos', 'AgendasController.professorAbrir')
+  Route.get(
+    'servicos/:idServico/agendamentos/:idAgendamento',
+    'AgendasController.professorDetalhes'
+  )
   Route.post('agendamentos', 'AgendasController.professorBuscar')
 })
   .prefix('professor')
