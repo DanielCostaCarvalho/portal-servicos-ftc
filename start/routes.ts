@@ -78,6 +78,10 @@ Route.group(() => {
     'servicos/:idServico/agendamentos/:idAgendamento',
     'AgendasController.professorDetalhes'
   )
+  Route.delete(
+    'servicos/:idServico/agendamentos/:idAgendamento',
+    'AgendasController.professorCancelamento'
+  )
   Route.post('agendamentos', 'AgendasController.professorBuscar')
 })
   .prefix('professor')

@@ -31,21 +31,24 @@ export default class Agenda extends BaseModel {
   @column()
   public observacao: string
 
+  @column()
+  public atendido: boolean
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Servico, {foreignKey: 'id_servico'})
+  @belongsTo(() => Servico, { foreignKey: 'id_servico' })
   public servico: BelongsTo<typeof Servico>
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_cliente'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_cliente' })
   public cliente: BelongsTo<typeof Usuario>
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_professor_responsavel'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_professor_responsavel' })
   public professor_responsavel: BelongsTo<typeof Usuario>
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_responsavel_cancelamento'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_responsavel_cancelamento' })
   public responsavel_cancelamento: BelongsTo<typeof Usuario>
 }

@@ -270,4 +270,47 @@ export default class AgendasController {
 
     return agendamento
   }
+
+  public async professorCancelamento({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+    const { idServico, idAgendamento } = params
+
+    const professorServico = await ProfessorServico.query()
+      .where('id_professor', '=', usuario.id)
+      .andWhere('id_servico', '=', idServico)
+      .first()
+
+    if (!professorServico) {
+      return response.forbidden({
+        mensagem: 'O professor não está vinculado a esse serviço',
+      })
+    }
+
+    const agendamento = await Agenda.query()
+      .preload('professor_responsavel')
+      .preload('responsavel_cancelamento')
+      .preload('cliente')
+      .where('id', '=', idAgendamento)
+      .andWhere('id_servico', '=', idServico)
+      .andWhere('id_professor_responsavel', '=', usuario.id)
+      .first()
+
+    if (!agendamento) {
+      return response.badRequest({
+        mensagem: 'Não foi encontrado o agendamento com os dados solicitados',
+      })
+    }
+
+    if (agendamento.atendido) {
+      return response.badRequest({
+        mensagem: 'Impossível cancelar a agenda uma vez que o atendimento já foi realizado',
+      })
+    }
+
+    agendamento.id_responsavel_cancelamento = usuario.id
+
+    await agendamento.save()
+
+    return response.status(204)
+  }
 }
