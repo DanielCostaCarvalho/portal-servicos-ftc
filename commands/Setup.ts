@@ -24,12 +24,20 @@ export default class Setup extends BaseCommand {
   }
 
   public async run() {
-    const confirmed = await this.prompt.confirm(
-      'Tem certeza de que deseja continuar? Só faça isso se for sua primeira vez'
-    )
-    if (confirmed) {
-      await this.asyncExec('cp .env.example .env')
-      this.logger.log('.env criado')
+    const so = await this.prompt.choice('Qual seu SO?', [
+      'Distro Linux',
+      'Windows',
+      'Só me tira daqui',
+    ])
+    if (so !== 'Só me tira daqui') {
+      if (so === 'Distro Linux') {
+        await this.asyncExec('cp .env.example .env')
+        this.logger.log('.env criado')
+      } else {
+        await this.asyncExec('copy .env.example .env')
+        this.logger.log('.env criado')
+      }
+
       const buildMessage = await this.asyncExec('npm run build')
       this.logger.log(buildMessage)
       try {
