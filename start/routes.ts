@@ -60,6 +60,7 @@ Route.group(() => {
   Route.get('servicos/:id', 'ServicosController.getServicoCoordenadorId')
   Route.put('servicos/:id', 'ServicosController.atualizacao')
   Route.delete('servicos/:id', 'ServicosController.deletar')
+  Route.get('professores', 'UsuariosController.listagemProfessores')
   Route.post(
     'servicos/:idServico/professores/:idProfessor',
     'ServicosController.vincularProfessorServico'

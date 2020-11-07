@@ -252,4 +252,12 @@ export default class UsuarioController {
       return response.badRequest({ error })
     }
   }
+
+  public async listagemProfessores({ response }: HttpContextContract) {
+    try {
+      return await Usuario.query().select(['id', 'nome']).where('tipo', 'Professor')
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
 }
