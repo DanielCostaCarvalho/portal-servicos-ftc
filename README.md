@@ -22,7 +22,7 @@
 
 - node ace db:seed
 
-- node run start
+- npm run start
 
 Caso ocorra algum erro no processo de instalação similar a:
 
