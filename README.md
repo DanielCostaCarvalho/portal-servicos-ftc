@@ -102,7 +102,11 @@ Para se autenticar na API
 
 - [x] GET ​/coordenador​/categorias​/{idcategoria}​/servicos
 
-- [x] POST ​/coordenador​/servicos​/{idservico}
+- [x] GET ​/coordenador​/professores
+
+- [x] POST ​/coordenador​/servicos​
+
+- [x] GET ​/coordenador​/servicos​/{idservico}
 
 - [x] PUT ​/coordenador​/servicos​/{idservico}
 
