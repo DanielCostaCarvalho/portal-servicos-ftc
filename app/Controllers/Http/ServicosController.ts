@@ -6,33 +6,35 @@ import Servico from 'App/Models/Servico'
 import Usuario from 'App/Models/Usuario'
 import {
   formatarErroCampoObrigatorio,
-  getCampoErroValidacao, getErroValidacao,
+  getCampoErroValidacao,
+  getErroValidacao,
   getMensagemErro,
   existeErroValidacao,
-}
-  from 'App/Utils/Utils'
+} from 'App/Utils/Utils'
 
 export default class ServicosController {
-  public async servicosCoordenador ({ request, response, params }: HttpContextContract) {
+  public async servicosCoordenador({ request, response, params }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
 
       const categoria = await Categoria.find(params.idCategoria)
 
-      if(!categoria) {
+      if (!categoria) {
         return response.status(401).json({
-          'mensagem': 'Categoria não encontrada',
+          mensagem: 'Categoria não encontrada',
         })
       }
 
-      if(categoria.id_coordenador !== usuario.id) {
+      if (categoria.id_coordenador !== usuario.id) {
         return response.status(401).json({
-          'mensagem': 'Você não é o coordenador desta categoria',
+          mensagem: 'Você não é o coordenador desta categoria',
         })
       }
 
-      const servicos = await Servico.query().select(['servicos.id', 'servicos.nome'])
-        .where('id_categoria', params.idCategoria).preload('professores', (query) => {
+      const servicos = await Servico.query()
+        .select(['servicos.id', 'servicos.nome'])
+        .where('id_categoria', params.idCategoria)
+        .preload('professores', (query) => {
           query.select(['id', 'nome'])
         })
 
@@ -43,7 +45,7 @@ export default class ServicosController {
     }
   }
 
-  public async cadastro ({ request, response }: HttpContextContract) {
+  public async cadastro({ request, response }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
 
@@ -55,19 +57,21 @@ export default class ServicosController {
               table: 'categorias',
               column: 'id',
               where: {
-                'id_coordenador': usuario.id,
+                id_coordenador: usuario.id,
               },
             }),
           ]),
-          ids_professores: schema.array().members(schema.number([
-            rules.exists({
-              table: 'usuarios',
-              column: 'id',
-              where: {
-                'tipo': 'Professor',
-              },
-            }),
-          ])),
+          ids_professores: schema.array().members(
+            schema.number([
+              rules.exists({
+                table: 'usuarios',
+                column: 'id',
+                where: {
+                  tipo: 'Professor',
+                },
+              }),
+            ])
+          ),
         }),
         messages: {
           'id_categoria.exists': 'Categoria não encontrada',
@@ -75,11 +79,11 @@ export default class ServicosController {
           '*': (field, rule) => {
             const [campo] = field.split('.')
 
-            if(campo === 'ids_professores' && rule === 'number') {
+            if (campo === 'ids_professores' && rule === 'number') {
               return 'O array de ids_professores precisa pode conter apenas números'
             }
 
-            if(campo === 'ids_professores' && rule === 'exists') {
+            if (campo === 'ids_professores' && rule === 'exists') {
               return 'Um dos professores informados não foi encontrado'
             }
 
@@ -93,12 +97,14 @@ export default class ServicosController {
         id_categoria: dadosCadastro.id_categoria,
       })
 
-      await Promise.all(dadosCadastro.ids_professores.map(async idProfessor => {
-        await ProfessorServico.create({
-          id_professor: idProfessor,
-          id_servico: servico.id,
+      await Promise.all(
+        dadosCadastro.ids_professores.map(async (idProfessor) => {
+          await ProfessorServico.create({
+            id_professor: idProfessor,
+            id_servico: servico.id,
+          })
         })
-      }))
+      )
 
       return response.status(201).json({ mensagem: 'Serviço criado com sucesso' })
     } catch (error) {
@@ -110,7 +116,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
@@ -120,7 +126,7 @@ export default class ServicosController {
     }
   }
 
-  public async atualizacao ({ request, response, params }: HttpContextContract) {
+  public async atualizacao({ request, response, params }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
 
@@ -137,7 +143,7 @@ export default class ServicosController {
                 table: 'categorias',
                 column: 'id',
                 where: {
-                  'id_coordenador': usuario.id,
+                  id_coordenador: usuario.id,
                 },
               }),
             ]),
@@ -150,17 +156,17 @@ export default class ServicosController {
 
       const servico = await Servico.find(params.id)
 
-      if(!servico) {
+      if (!servico) {
         return response.status(401).json({
-          'mensagem': 'Serviço não encontrado',
+          mensagem: 'Serviço não encontrado',
         })
       }
 
-      if(data.nome !== null) {
+      if (data.nome !== null) {
         servico.nome = data.nome
       }
 
-      if(data.id_categoria !== null) {
+      if (data.id_categoria !== null) {
         servico.id_categoria = data.id_categoria
       }
 
@@ -176,7 +182,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
@@ -186,23 +192,23 @@ export default class ServicosController {
     }
   }
 
-  public async deletar ({ request, response, params }: HttpContextContract) {
+  public async deletar({ request, response, params }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
 
       const servico = await Servico.find(params.id)
 
-      if(!servico) {
+      if (!servico) {
         return response.status(401).json({
-          'mensagem': 'Serviço não encontrado',
+          mensagem: 'Serviço não encontrado',
         })
       }
 
       const categoria = await Categoria.find(servico.id_categoria)
 
-      if(categoria?.id_coordenador !== usuario.id) {
+      if (categoria?.id_coordenador !== usuario.id) {
         return response.status(401).json({
-          'mensagem': 'Esse serviço não está associado a uma categoria em que você é coordenador',
+          mensagem: 'Esse serviço não está associado a uma categoria em que você é coordenador',
         })
       }
 
@@ -214,27 +220,27 @@ export default class ServicosController {
     }
   }
 
-  public async vincularProfessorServico ({ response, params }: HttpContextContract) {
+  public async vincularProfessorServico({ response, params }: HttpContextContract) {
     try {
       const usuario = await Usuario.find(params.idProfessor)
 
-      if(!usuario) {
+      if (!usuario) {
         return response.status(401).json({
-          'mensagem': 'Professor não encontrado',
+          mensagem: 'Professor não encontrado',
         })
       }
 
-      if(usuario.tipo !== 'Professor') {
+      if (usuario.tipo !== 'Professor') {
         return response.status(401).json({
-          'mensagem': 'Usuário informado não é um professor',
+          mensagem: 'Usuário informado não é um professor',
         })
       }
 
       const servico = await Servico.find(params.idServico)
 
-      if(!servico) {
+      if (!servico) {
         return response.status(401).json({
-          'mensagem': 'Serviço não encontrado',
+          mensagem: 'Serviço não encontrado',
         })
       }
 
@@ -243,9 +249,9 @@ export default class ServicosController {
         .where('id_professor', usuario.id)
         .first()
 
-      if(professorServico) {
+      if (professorServico) {
         return response.status(401).json({
-          'mensagem': 'Professor já estava vinculado ao serviço',
+          mensagem: 'Professor já estava vinculado ao serviço',
         })
       }
 
@@ -264,7 +270,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
@@ -274,21 +280,21 @@ export default class ServicosController {
     }
   }
 
-  public async desvincularProfessorServico ({ response, params }: HttpContextContract) {
+  public async desvincularProfessorServico({ response, params }: HttpContextContract) {
     try {
       const usuario = await Usuario.find(params.idProfessor)
 
-      if(!usuario) {
+      if (!usuario) {
         return response.status(401).json({
-          'mensagem': 'Professor não encontrado',
+          mensagem: 'Professor não encontrado',
         })
       }
 
       const servico = await Servico.find(params.idServico)
 
-      if(!servico) {
+      if (!servico) {
         return response.status(401).json({
-          'mensagem': 'Serviço não encontrado',
+          mensagem: 'Serviço não encontrado',
         })
       }
 
@@ -297,15 +303,17 @@ export default class ServicosController {
         .where('id_professor', usuario.id)
         .first()
 
-      if(!professorServico) {
+      if (!professorServico) {
         return response.status(401).json({
-          'mensagem': 'O Professor não está vinculado ao serviço',
+          mensagem: 'O Professor não está vinculado ao serviço',
         })
       }
 
       await professorServico.delete()
 
-      return response.status(201).json({ mensagem: 'Professor desvinculado do serviço com sucesso' })
+      return response
+        .status(201)
+        .json({ mensagem: 'Professor desvinculado do serviço com sucesso' })
     } catch (error) {
       if (getErroValidacao(error) === 'required') {
         const campoErro = getCampoErroValidacao(error)
@@ -315,12 +323,50 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      if(existeErroValidacao(error)) {
+      if (existeErroValidacao(error)) {
         const erro = getMensagemErro(error)
 
         return response.status(401).json(erro)
       }
 
+      return response.badRequest({ error })
+    }
+  }
+
+  public async getServicoCoordenadorId({ request, response, params }: HttpContextContract) {
+    try {
+      const usuario: Usuario = request.input('usuario')
+
+      const servico = await Servico.query()
+        .where('id', params.id)
+        .select(['id', 'nome', 'id_categoria'])
+        .preload('professores', (query) => {
+          query.select(['id', 'nome'])
+        })
+        .first()
+
+      if (!servico) {
+        return response.status(401).json({
+          mensagem: 'Serviço não encontrado',
+        })
+      }
+
+      const categoria = await Categoria.find(servico?.id_categoria)
+
+      if (!categoria) {
+        return response.status(401).json({
+          mensagem: 'Nenhuma categoria encontrada neste serviço',
+        })
+      }
+
+      if (categoria?.id_coordenador !== usuario.id) {
+        return response.status(401).json({
+          mensagem: 'Você não é o coodenador da categoria deste serviço',
+        })
+      }
+
+      return servico
+    } catch (error) {
       return response.badRequest({ error })
     }
   }
