@@ -9,7 +9,7 @@
     "commit": "cz"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^2.1.5",
+    "@adonisjs/assembler": "^3.0.7",
     "@types/jsonwebtoken": "^8.5.0",
     "adonis-preset-ts": "^1.0.4",
     "commitizen": "^4.2.2",
@@ -27,10 +27,8 @@
     "youch-terminal": "^1.0.1"
   },
   "dependencies": {
-    "@adonisjs/ace": "^6.9.4",
-    "@adonisjs/core": "^5.0.0-preview-rc-1.12",
-    "@adonisjs/fold": "^6.4.1",
-    "@adonisjs/lucid": "^8.5.0",
+    "@adonisjs/core": "^5.0.4-preview-rc-2",
+    "@adonisjs/lucid": "^9.0.3",
     "jsonwebtoken": "^8.5.1",
     "luxon": "^1.25.0",
     "pg": "^8.4.1",
