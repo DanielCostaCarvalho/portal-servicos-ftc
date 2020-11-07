@@ -313,4 +313,65 @@ export default class AgendasController {
 
     return response.status(204)
   }
+
+  public async professorAlteracao({ request, response, params }: HttpContextContract) {
+    const { observacao, atendente, atendido, usuario } = request.only([
+      'observacao',
+      'atendente',
+      'atendido',
+      'usuario',
+    ])
+    const { idServico, idAgendamento } = params
+
+    const schemaDaRequisicao = schema.create({
+      observacao: schema.string(),
+      atendente: schema.string(),
+      atendido: schema.boolean(),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const professorServico = await ProfessorServico.query()
+      .where('id_professor', '=', usuario.id)
+      .andWhere('id_servico', '=', idServico)
+      .first()
+
+    if (!professorServico) {
+      return response.forbidden({
+        mensagem: 'O professor não está vinculado a esse serviço',
+      })
+    }
+
+    const agendamento = await Agenda.query()
+      .preload('professor_responsavel')
+      .preload('responsavel_cancelamento')
+      .preload('cliente')
+      .where('id', '=', idAgendamento)
+      .andWhere('id_servico', '=', idServico)
+      .andWhere('id_professor_responsavel', '=', usuario.id)
+      .first()
+
+    if (!agendamento) {
+      return response.badRequest({
+        mensagem: 'Não foi encontrado o agendamento com os dados solicitados',
+      })
+    }
+
+    agendamento.atendido = atendido
+    agendamento.atendente = atendente
+    agendamento.observacao = observacao
+
+    await agendamento.save()
+
+    return response.status(204)
+  }
 }

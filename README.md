@@ -136,7 +136,7 @@ Para se autenticar na API
 
 - [x] GET ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
 
-- [ ] PUT ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
+- [x] PUT ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
 
 - [x] DELETE ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
 

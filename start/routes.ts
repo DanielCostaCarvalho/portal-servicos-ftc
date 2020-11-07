@@ -83,6 +83,10 @@ Route.group(() => {
     'AgendasController.professorCancelamento'
   )
   Route.post('agendamentos', 'AgendasController.professorBuscar')
+  Route.put(
+    'servicos/:idServico/agendamentos/:idAgendamento',
+    'AgendasController.professorAlteracao'
+  )
 })
   .prefix('professor')
   .middleware(['jwt', 'professor'])
