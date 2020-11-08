@@ -30,6 +30,7 @@ Route.post('autenticacao', 'UsuariosController.login')
 Route.post('cliente/servicos/:idServico/agendas', 'AgendasController.clienteBuscaMes')
 Route.group(() => {
   Route.post('servicos/agendamento/:idAgendamento', 'AgendasController.clienteAgendar')
+  Route.get('agendamentos', 'AgendasController.clienteBuscar')
 })
   .prefix('cliente')
   .middleware(['jwt', 'cliente'])

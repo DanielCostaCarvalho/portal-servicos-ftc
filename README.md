@@ -92,7 +92,7 @@ Para se autenticar na API
 - [x] POST ​/cliente​/servicos​/{idservico}​/agendas
 - [x] POST ​/cliente​/servicos​/agendamento​/{idagenda}
 
-- [ ] GET ​/cliente​/agendamentos
+- [x] GET ​/cliente​/agendamentos
 
 - [ ] POST ​/cliente​/agendamentos​/{idagendamento}​/cancelar
 

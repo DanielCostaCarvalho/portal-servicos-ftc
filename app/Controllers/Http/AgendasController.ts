@@ -442,4 +442,28 @@ export default class AgendasController {
 
     return response.status(201)
   }
+
+  public async clienteBuscar({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+
+    const agendas = await Agenda.query()
+      .preload('cliente', (query) => {
+        query.select([
+          'id',
+          'nome',
+          'data_hora',
+          'atendente',
+          'atendido',
+          'justificativa_cancelamento',
+          'id_responsavel_cancelamento',
+        ])
+      })
+      .preload('responsavel_cancelamento', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
+      .where('id_cliente', usuario.id)
+
+    return agendas
+  }
 }
