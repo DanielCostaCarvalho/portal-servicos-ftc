@@ -54,6 +54,15 @@ export default class UnidadesController {
     }
   }
 
+  public async getUnidades({ response }: HttpContextContract) {
+    try {
+      return await Unidade.query()
+        .select(['id', 'nome'])
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async getUnidadeId({ response, params }: HttpContextContract) {
     try {
       const unidade = await Unidade.query()

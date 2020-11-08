@@ -45,6 +45,29 @@ export default class ServicosController {
     }
   }
 
+  public async getServicos({response, params }: HttpContextContract) {
+    try {
+
+      const idCategoria = params.idCategoria
+
+      const categoria = await Categoria.find(idCategoria)
+
+      if(!categoria) {
+        return response.status(401).json({
+          'mensagem': 'Categoria não encontrada',
+        })
+      }
+
+      const servicos = await Servico.query().select(['id', 'nome'])
+        .where('id_categoria',idCategoria)
+
+      return servicos
+    } catch (error) {
+      console.log(error)
+      return response.badRequest({ error })
+    }
+  }
+
   public async cadastro({ request, response }: HttpContextContract) {
     try {
       const usuario: Usuario = request.input('usuario')
