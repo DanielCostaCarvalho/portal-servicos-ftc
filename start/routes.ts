@@ -27,6 +27,8 @@ Route.get('/', async () => {
 Route.post('cadastro', 'UsuariosController.cadastro')
 Route.post('autenticacao', 'UsuariosController.login')
 
+Route.post('cliente/servicos/:idServico/agendas', 'AgendasController.clienteBuscaMes')
+
 Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
   Route.get('unidades', 'UnidadesController.getUnidadesMaster')

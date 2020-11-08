@@ -374,4 +374,40 @@ export default class AgendasController {
 
     return response.status(204)
   }
+
+  public async clienteBuscaMes({ request, response, params }: HttpContextContract) {
+    const { mes } = request.only(['mes'])
+    const { idServico } = params
+
+    const schemaDaRequisicao = schema.create({
+      mes: schema.date({
+        format: 'yyyy-MM',
+      }),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    if (!idServico) {
+      return response.badRequest({ mensagem: 'Rota inválida' })
+    }
+
+    const mesInicial = DateTime.fromISO(mes)
+    const mesFinal = DateTime.fromObject(mesInicial.toObject()).plus({ month: 1 })
+
+    const agendas = await Agenda.query()
+      .select('id', 'data_hora', 'duracao', 'atendente')
+      .whereBetween('data_hora', [mesInicial.toSQL(), mesFinal.toSQL()])
+
+    return agendas
+  }
 }

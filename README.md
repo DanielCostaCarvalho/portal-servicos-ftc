@@ -89,7 +89,7 @@ Para se autenticar na API
 - [ ] GET ​/cliente​/unidades​/{idunidade}​/postagens
 - [ ] GET ​/cliente​/unidades​/{idunidade}​/categorias
 - [ ] GET ​/cliente​/categorias​/{idcategoria}​/servicos
-- [ ] POST ​/cliente​/servicos​/{idservico}​/agendas
+- [x] POST ​/cliente​/servicos​/{idservico}​/agendas
 - [ ] POST ​/cliente​/servicos​/agendamento​/{idagenda}
 
 - [ ] GET ​/cliente​/agendamentos
