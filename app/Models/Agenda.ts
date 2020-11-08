@@ -14,7 +14,7 @@ export default class Agenda extends BaseModel {
   public id_servico: number
 
   @column()
-  public id_cliente: number
+  public id_cliente: number | null
 
   @column()
   public atendente: string

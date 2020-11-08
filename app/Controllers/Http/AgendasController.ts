@@ -3,6 +3,8 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import ProfessorServico from 'App/Models/ProfessorServico'
 import Agenda from 'App/Models/Agenda'
+import Desistencia from 'App/Models/Desistencia'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class AgendasController {
   public async coordenadorAbrir({ request, response, params }: HttpContextContract) {
@@ -482,5 +484,43 @@ export default class AgendasController {
       .where('id_cliente', usuario.id)
 
     return agendas
+  }
+
+  public async clienteCancelamento({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+    const { idAgendamento } = params
+
+    const agendamento = await Agenda.query()
+      .where('id', '=', idAgendamento)
+      .andWhere('id_cliente', '=', usuario.id)
+      .first()
+
+    if (!agendamento) {
+      return response.badRequest({
+        mensagem: 'Não foi encontrado o agendamento com os dados solicitados',
+      })
+    }
+
+    if (agendamento.atendido) {
+      return response.badRequest({
+        mensagem: 'Impossível cancelar a agenda uma vez que o atendimento já foi realizado',
+      })
+    }
+
+    agendamento.id_cliente = null
+
+    await Database.transaction(async (trx) => {
+      agendamento.useTransaction(trx)
+      await Promise.all([
+        trx
+          .insertQuery()
+          .table('desistencias')
+          .insert({ id_cliente: usuario.id, id_servico: agendamento.id_servico }),
+
+        agendamento.save(),
+      ])
+    })
+
+    return response.status(201)
   }
 }

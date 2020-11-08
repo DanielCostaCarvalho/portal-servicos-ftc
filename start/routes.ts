@@ -27,14 +27,6 @@ Route.get('/', async () => {
 Route.post('cadastro', 'UsuariosController.cadastro')
 Route.post('autenticacao', 'UsuariosController.login')
 
-Route.post('cliente/servicos/:idServico/agendas', 'AgendasController.clienteBuscaMes')
-Route.group(() => {
-  Route.post('servicos/agendamento/:idAgendamento', 'AgendasController.clienteAgendar')
-  Route.get('agendamentos', 'AgendasController.clienteBuscar')
-})
-  .prefix('cliente')
-  .middleware(['jwt', 'cliente'])
-
 Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
   Route.get('unidades', 'UnidadesController.getUnidadesMaster')
@@ -101,9 +93,18 @@ Route.group(() => {
   .prefix('professor')
   .middleware(['jwt', 'professor'])
 
-  Route.group(()=>{    
-    Route.get('unidades','UnidadesController.getUnidades')
-    Route.get('unidades/:idUnidade/postagens','PostagensController.postagensUnidade')
-    Route.get('unidades/:idUnidade/categorias','CategoriasController.categoriasUnidade')
-    Route.get('categorias/:idCategoria/servicos','ServicosController.getServicos')
-  }).prefix('cliente')
+Route.group(() => {
+  Route.get('unidades', 'UnidadesController.getUnidades')
+  Route.get('unidades/:idUnidade/postagens', 'PostagensController.postagensUnidade')
+  Route.get('unidades/:idUnidade/categorias', 'CategoriasController.categoriasUnidade')
+  Route.get('categorias/:idCategoria/servicos', 'ServicosController.getServicos')
+  Route.post('servicos/:idServico/agendas', 'AgendasController.clienteBuscaMes')
+}).prefix('cliente')
+
+Route.group(() => {
+  Route.post('servicos/agendamento/:idAgendamento', 'AgendasController.clienteAgendar')
+  Route.get('agendamentos', 'AgendasController.clienteBuscar')
+  Route.delete('agendamentos/:idAgendamento', 'AgendasController.clienteCancelamento')
+})
+  .prefix('cliente')
+  .middleware(['jwt', 'cliente'])

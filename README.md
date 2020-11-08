@@ -85,16 +85,16 @@ Para se autenticar na API
 
 ## Cliente/Paciente
 
-- [ ] GET ​/cliente​/unidades
-- [ ] GET ​/cliente​/unidades​/{idunidade}​/postagens
-- [ ] GET ​/cliente​/unidades​/{idunidade}​/categorias
-- [ ] GET ​/cliente​/categorias​/{idcategoria}​/servicos
+- [x] GET ​/cliente​/unidades
+- [x] GET ​/cliente​/unidades​/{idunidade}​/postagens
+- [x] GET ​/cliente​/unidades​/{idunidade}​/categorias
+- [x] GET ​/cliente​/categorias​/{idcategoria}​/servicos
 - [x] POST ​/cliente​/servicos​/{idservico}​/agendas
 - [x] POST ​/cliente​/servicos​/agendamento​/{idagenda}
 
 - [x] GET ​/cliente​/agendamentos
 
-- [ ] POST ​/cliente​/agendamentos​/{idagendamento}​/cancelar
+- [x] DELETE ​/cliente​/agendamentos​/{idagendamento}​
 
 ## Coordenador
 
