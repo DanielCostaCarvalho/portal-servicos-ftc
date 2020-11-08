@@ -407,7 +407,39 @@ export default class AgendasController {
     const agendas = await Agenda.query()
       .select('id', 'data_hora', 'duracao', 'atendente')
       .whereBetween('data_hora', [mesInicial.toSQL(), mesFinal.toSQL()])
+      .andWhereNull('id_cliente')
 
     return agendas
+  }
+
+  public async clienteAgendar({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['mes'])
+    const { idAgendamento } = params
+
+    if (!idAgendamento) {
+      return response.badRequest({ mensagem: 'Rota inválida' })
+    }
+
+    const agenda = await Agenda.find(idAgendamento)
+
+    if (!agenda) {
+      return response.badRequest({ mensagem: 'Não existe esse agendamento' })
+    }
+
+    if (agenda.id_cliente == usuario.id) {
+      return response.status(201)
+    }
+
+    if (agenda.id_cliente) {
+      return response.conflict({
+        mensagem: 'Horário já agendado anteriormente. Tente novamente em outro horário.',
+      })
+    }
+
+    agenda.id_cliente = usuario.id
+
+    await agenda.save()
+
+    return response.status(201)
   }
 }

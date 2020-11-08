@@ -28,6 +28,11 @@ Route.post('cadastro', 'UsuariosController.cadastro')
 Route.post('autenticacao', 'UsuariosController.login')
 
 Route.post('cliente/servicos/:idServico/agendas', 'AgendasController.clienteBuscaMes')
+Route.group(() => {
+  Route.post('servicos/agendamento/:idAgendamento', 'AgendasController.clienteAgendar')
+})
+  .prefix('cliente')
+  .middleware(['jwt', 'cliente'])
 
 Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
