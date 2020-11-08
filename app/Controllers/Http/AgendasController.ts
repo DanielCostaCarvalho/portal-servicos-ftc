@@ -272,8 +272,24 @@ export default class AgendasController {
   }
 
   public async professorCancelamento({ request, response, params }: HttpContextContract) {
-    const { usuario } = request.only(['usuario'])
+    const { usuario, justificativa } = request.only(['usuario', 'justificativa'])
     const { idServico, idAgendamento } = params
+
+    const schemaDaRequisicao = schema.create({
+      justificativa: schema.string({}, [rules.minLength(5)]),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          minLength: 'É preciso de uma justificativa maior',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
 
     const professorServico = await ProfessorServico.query()
       .where('id_professor', '=', usuario.id)
@@ -308,6 +324,7 @@ export default class AgendasController {
     }
 
     agendamento.id_responsavel_cancelamento = usuario.id
+    agendamento.justificativa_cancelamento = justificativa
 
     await agendamento.save()
 
