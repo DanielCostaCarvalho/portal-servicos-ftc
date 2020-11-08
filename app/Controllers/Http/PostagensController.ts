@@ -38,6 +38,28 @@ export default class PostagensController {
     }
   }
 
+  public async postagensUnidade({ response, params }: HttpContextContract) {
+    try {
+      const idUnidade = params.idUnidade
+
+      const unidade = await Unidade.find(idUnidade)
+
+      if (!unidade) {
+        return response.status(401).json({
+          mensagem: 'Unidade não encontrada',
+        })
+      }
+
+      const categorias = await Postagem.query()
+        .select(['id', 'titulo', 'mensagem', 'ativa', 'data_expiracao'])
+        .where('id_unidade', idUnidade)
+
+      return categorias
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async cadastroMaster({ request, response }: HttpContextContract) {
     try {
       const data = request.only(['id_categoria', 'ativa', 'data_expiracao'])

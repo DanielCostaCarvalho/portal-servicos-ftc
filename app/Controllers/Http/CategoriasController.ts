@@ -35,6 +35,28 @@ export default class CategoriasController {
     }
   }
 
+  public async categoriasUnidade({ response, params }: HttpContextContract) {
+    try {
+      const idUnidade = params.idUnidade
+
+      const unidade = await Unidade.find(idUnidade)
+
+      if (!unidade) {
+        return response.status(401).json({
+          mensagem: 'Unidade não encontrada',
+        })
+      }
+
+      const categorias = await Categoria.query()
+        .select(['id', 'nome'])
+        .where('id_unidade', idUnidade)
+
+      return categorias
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async cadastro({ request, response }: HttpContextContract) {
     try {
       const dadosCadastro = await request.validate({

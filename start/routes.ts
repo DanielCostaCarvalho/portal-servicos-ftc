@@ -100,3 +100,10 @@ Route.group(() => {
 })
   .prefix('professor')
   .middleware(['jwt', 'professor'])
+
+  Route.group(()=>{    
+    Route.get('unidades','UnidadesController.getUnidades')
+    Route.get('unidades/:idUnidade/postagens','PostagensController.postagensUnidade')
+    Route.get('unidades/:idUnidade/categorias','CategoriasController.categoriasUnidade')
+    Route.get('categorias/:idCategoria/servicos','ServicosController.getServicos')
+  }).prefix('cliente')
