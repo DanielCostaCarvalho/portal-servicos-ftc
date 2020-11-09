@@ -159,15 +159,12 @@ export default class UsuarioController {
 
   public async atualizarMaster({ request, response, params }: HttpContextContract) {
     try {
-      const data = request.only(['nome', 'senha', 'email', 'tipo'])
+      const data = request.only(['nome', 'email', 'tipo'])
 
       await request.validate({
         schema: schema.create({
           ...(data.nome !== undefined && { nome: schema.string() }),
           ...(data.email !== undefined && { email: schema.string({}, [rules.email()]) }),
-          ...(data.senha !== undefined && {
-            senha: schema.string({}, [rules.minLength(6)]),
-          }),
           ...(data.tipo !== undefined && {
             tipo: schema.enum(['Cliente', 'Diretor', 'Coordenador', 'Master', 'Professor']),
           }),
@@ -205,10 +202,6 @@ export default class UsuarioController {
         usuario.email = data.email
       }
 
-      if (data.senha) {
-        usuario.senha = data.senha
-      }
-
       if (data.tipo) {
         usuario.tipo = data.tipo
       }
@@ -223,7 +216,7 @@ export default class UsuarioController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -258,6 +251,44 @@ export default class UsuarioController {
       return await Usuario.query().select(['id', 'nome']).where('tipo', 'Professor')
     } catch (error) {
       return response.badRequest({ error })
+    }
+  }
+
+  public async atualizarSenhaMaster({ request, response, params }: HttpContextContract) {
+    try {
+      const data = await request.validate({
+        schema: schema.create({
+          senha: schema.string({}, [rules.minLength(6)]),
+        }),
+        messages: {
+          'senha.required': 'Senha não informada',
+          'senha.minLength': 'Senha muito pequena. Mínimo de 6 caracteres',
+        },
+      })
+
+      const usuario = await Usuario.find(params.id)
+
+      if (!usuario) {
+        return response.status(401).json({
+          mensagem: 'Usuario não encontrado',
+        })
+      }
+
+      if (data.senha) {
+        usuario.senha = data.senha
+      }
+
+      await usuario.save()
+
+      return response.ok({ mensagem: 'Senha editada com sucesso' })
+    } catch (error) {
+      if (existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
+      return response.badRequest({ mensagem: error })
     }
   }
 }

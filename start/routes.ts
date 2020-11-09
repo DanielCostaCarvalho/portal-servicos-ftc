@@ -49,6 +49,7 @@ Route.group(() => {
   Route.get('usuarios/:id', 'UsuariosController.getUsuarioId')
   Route.put('usuarios/:id', 'UsuariosController.atualizarMaster')
   Route.delete('usuarios/:id', 'UsuariosController.deletarMaster')
+  Route.put('usuarios/atualizarSenha/:id', 'UsuariosController.atualizarSenhaMaster')
 })
   .prefix('master')
   .middleware(['jwt', 'master'])

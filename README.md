@@ -6,23 +6,9 @@
 - npm "^6.0.0"
 - AdonisJS
 
-## Primeiramente
+Execute
 
-- Altere o ".env.example" para ".env"
-
-## Depois execute os comandos
-
-- npm install
-
-- npm run build
-
-- mkdir tmp
-
-- node ace migration:run
-
-- node ace db:seed
-
-- npm run start
+`node ace setup`
 
 Caso ocorra algum erro no processo de instalação similar a:
 
@@ -82,6 +68,8 @@ Para se autenticar na API
 - [x] DELETE ​/master​/usuarios​/{idusuario}
 
 - [x] GET ​/master​/usuarios​/{tipousuario}
+
+- [x] PUT ​/master​/usuarios​/atualizarSenha/{idusuario}
 
 ## Cliente/Paciente
 
@@ -149,3 +137,7 @@ Para se autenticar na API
 ## Diretor
 
 - [ ] POST ​/diretor​/relatorios
+
+```
+
+```
