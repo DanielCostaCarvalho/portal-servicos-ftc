@@ -7,6 +7,8 @@ import {
   getErroValidacao,
   getMensagemErro,
   capitalize,
+  getCampoErroValidacao,
+  formatarErroCampoObrigatorio,
 } from 'App/Utils/Utils'
 import Hash from '@ioc:Adonis/Core/Hash'
 
@@ -22,6 +24,10 @@ export default class UsuarioController {
           ]),
           senha: schema.string({}, [rules.minLength(6)]),
         }),
+        messages: {
+          'email.email': 'Informe um e-mail válido',
+          'senha.minLength': 'Senha muito pequena. Mínimo de 6 caracteres',
+        },
       })
 
       const usuario = await Usuario.create({
@@ -31,13 +37,29 @@ export default class UsuarioController {
 
       const token = gerarTokenJWT(usuario)
 
-      return response.ok({ mensagem: 'Usuário criado com sucesso', usuario, token })
+      return response.ok({ mensagem: 'Usuário criado com sucesso', token })
     } catch (error) {
-      if (getErroValidacao(error) === 'unique') {
+      const tipoErro = getErroValidacao(error)
+
+      if (tipoErro === 'unique') {
         return response.badRequest({ mensagem: 'Email já registrado' })
       }
 
-      return response.badRequest({ error })
+      if (tipoErro === 'required') {
+        const campoErro = getCampoErroValidacao(error)
+
+        const erro = formatarErroCampoObrigatorio(campoErro)
+
+        return response.status(401).json(erro)
+      }
+
+      if (existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -68,6 +90,12 @@ export default class UsuarioController {
         return response.status(401).json({ mensagem: 'E-mail não cadastrado' })
       }
 
+      if (existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
       return response.status(401).badRequest({ mensagem: 'Erro ao fazer login' })
     }
   }
@@ -76,7 +104,7 @@ export default class UsuarioController {
     try {
       return await Usuario.query().select(['id', 'nome', 'email', 'tipo'])
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -95,7 +123,7 @@ export default class UsuarioController {
 
       return usuario
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -114,7 +142,7 @@ export default class UsuarioController {
       return await Usuario.query().select(['id', 'nome', 'email', 'tipo']).where('tipo', tipo)
     } catch (error) {
       console.log(error)
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -134,6 +162,7 @@ export default class UsuarioController {
           // eslint-disable-next-line max-len
           'tipo.enum': `Tipo de usuário não informado corretamente. Os tipos são Cliente, Diretor, Coordenador, Master e Professor`,
           'email.email': 'Informe um e-mail válido',
+          'senha.minLength': 'Senha muito pequena. Mínimo de 6 caracteres',
         },
       })
 
@@ -153,7 +182,7 @@ export default class UsuarioController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -242,7 +271,7 @@ export default class UsuarioController {
 
       return response.status(201).json({ mensagem: 'Usuário deletado com sucesso' })
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -250,7 +279,7 @@ export default class UsuarioController {
     try {
       return await Usuario.query().select(['id', 'nome']).where('tipo', 'Professor')
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -288,6 +317,117 @@ export default class UsuarioController {
         return response.status(401).json(erro)
       }
 
+      return response.badRequest({ mensagem: error })
+    }
+  }
+
+  public async atualizarDadosProprios({ request, response }: HttpContextContract) {
+    try {
+      const usuarioLogado: Usuario = request.input('usuario')
+
+      const data = request.only(['nome', 'email'])
+
+      await request.validate({
+        schema: schema.create({
+          ...(data.nome !== undefined && { nome: schema.string() }),
+          ...(data.email !== undefined && { email: schema.string({}, [rules.email()]) }),
+        }),
+        messages: {
+          'email.email': 'Informe um e-mail válido',
+        },
+      })
+
+      if (!data.nome && !data.email) {
+        return response.status(401).json({
+          mensagem: 'Dados não informados para atualização',
+        })
+      }
+
+      if (data.nome) {
+        usuarioLogado.nome = data.nome
+      }
+
+      if (data.email) {
+        const usuarioEmail = await Usuario.findBy('email', data.email)
+
+        if (usuarioEmail) {
+          if (usuarioEmail.id !== usuarioLogado.id) {
+            return response.status(401).json({
+              mensagem: 'E-mail já está vinculado a outro usuário',
+            })
+          }
+        }
+
+        usuarioLogado.email = data.email
+      }
+
+      await usuarioLogado.save()
+
+      return response.ok({ mensagem: 'Usuário editado com sucesso' })
+    } catch (error) {
+      if (existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
+      return response.badRequest({ mensagem: error })
+    }
+  }
+
+  public async atualizarSenha({ request, response }: HttpContextContract) {
+    try {
+      const usuarioLogado: Usuario = request.input('usuario')
+
+      const data = await request.validate({
+        schema: schema.create({
+          senha_atual: schema.string(),
+          senha: schema.string({}, [rules.minLength(6)]),
+        }),
+        messages: {
+          'senha.required': 'Senha não informada',
+          'senha_atual.required': 'Senha atual não informada',
+          'senha.minLength': 'Senha muito pequena. Mínimo de 6 caracteres',
+        },
+      })
+
+      const comparacaoSenha = await Hash.verify(usuarioLogado.senha, data.senha_atual)
+
+      if (!comparacaoSenha) {
+        return response.status(401).json({
+          mensagem: 'Senha atual informada não confere',
+        })
+      }
+
+      if (data.senha) {
+        usuarioLogado.senha = data.senha
+      }
+
+      await usuarioLogado.save()
+
+      return response.ok({ mensagem: 'Senha editada com sucesso' })
+    } catch (error) {
+      console.log(error)
+      if (existeErroValidacao(error)) {
+        const erro = getMensagemErro(error)
+
+        return response.status(401).json(erro)
+      }
+
+      return response.badRequest({ mensagem: error })
+    }
+  }
+
+  public async dadosUsuarioLogado({ request, response }: HttpContextContract) {
+    try {
+      const usuarioLogado: Usuario = request.input('usuario')
+
+      return {
+        id: usuarioLogado.id,
+        nome: usuarioLogado.nome,
+        email: usuarioLogado.email,
+      }
+    } catch (error) {
       return response.badRequest({ mensagem: error })
     }
   }

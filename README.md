@@ -25,6 +25,14 @@ Para se autenticar na API
 - [x] POST ​/autenticacao
 - [x] POST ​/cadastro
 
+## Usuários
+
+- [x] GET ​/minhaConta
+
+- [x] PUT ​/atualizarDados
+
+- [x] PUT ​/atualizarSenha
+
 ## Administrador master
 
 - [x] POST ​/master​/unidades
