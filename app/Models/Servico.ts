@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  belongsTo,
+  column,
+  ManyToMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import Categoria from './Categoria'
 import Usuario from './Usuario'
 
@@ -19,7 +26,7 @@ export default class Servico extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Categoria, {foreignKey: 'id_categoria'})
+  @belongsTo(() => Categoria, { foreignKey: 'id_categoria' })
   public categoria: BelongsTo<typeof Categoria>
 
   @manyToMany(() => Usuario, {

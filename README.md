@@ -132,7 +132,7 @@ Para se autenticar na API
 
 - [x] POST ​/professor​/servicos​/{idservico}​/agendamentos
 
-- [ ] GET ​/professor​/servicos
+- [x] GET ​/professor​/servicos
 
 - [x] GET ​/professor​/servicos​/{idservico}​/agendamentos​/{idagendamento}
 
@@ -145,7 +145,3 @@ Para se autenticar na API
 ## Diretor
 
 - [ ] POST ​/diretor​/relatorios
-
-```
-
-```
