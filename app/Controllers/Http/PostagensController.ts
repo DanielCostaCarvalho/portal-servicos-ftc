@@ -236,6 +236,7 @@ export default class PostagensController {
 
     return postagens
   }
+
   public async coordenadorCriar({ request, response }: HttpContextContract) {
     const { titulo, mensagem, id_categoria, ativa, data_expiracao, usuario } = request.only([
       'dias',
@@ -286,6 +287,93 @@ export default class PostagensController {
       ativa,
       data_expiracao,
     })
+
+    return response.status(201)
+  }
+
+  public async coordenadorEditar({ request, response, params }: HttpContextContract) {
+    const { titulo, mensagem, ativa, data_expiracao, usuario } = request.only([
+      'dias',
+      'hora_inicial',
+      'hora_final',
+      'duracao',
+      'id_professor',
+      'usuario',
+    ])
+
+    const schemaDaRequisicao = schema.create({
+      titulo: schema.string(),
+      mensagem: schema.string(),
+      id_categoria: schema.number([rules.unsigned()]),
+      ativa: schema.boolean(),
+      data_expiracao: schema.date(),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const { idPostagem } = params
+
+    const postagem = await Postagem.query().preload('categoria').where('id', idPostagem).first()
+
+    if (!postagem) {
+      return response.badRequest({ mensagem: 'A postagem selecionada não existe' })
+    }
+
+    if (postagem.categoria.id_coordenador != usuario.id) {
+      return response.forbidden({
+        mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
+      })
+    }
+
+    if (titulo) {
+      postagem.titulo = titulo
+    }
+
+    if (mensagem) {
+      postagem.mensagem = mensagem
+    }
+
+    if (ativa !== null && ativa !== undefined) {
+      postagem.ativa = ativa
+    }
+
+    if (data_expiracao !== undefined) {
+      postagem.data_expiracao = data_expiracao
+    }
+
+    await postagem.save()
+
+    return response.status(201)
+  }
+
+  public async coordenadorDeletar({ request, response, params }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+
+    const { idPostagem } = params
+
+    const postagem = await Postagem.query().preload('categoria').where('id', idPostagem).first()
+
+    if (!postagem) {
+      return response.badRequest({ mensagem: 'A postagem selecionada não existe' })
+    }
+
+    if (postagem.categoria.id_coordenador != usuario.id) {
+      return response.forbidden({
+        mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
+      })
+    }
+
+    await postagem.delete()
 
     return response.status(201)
   }

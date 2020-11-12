@@ -118,9 +118,9 @@ Para se autenticar na API
 
 - [x] POST ​/coordenador​/postagens
 
-- [ ] PUT ​/coordenador​/postagens​/{idpostagem}
+- [x] PUT ​/coordenador​/postagens​/{idpostagem}
 
-- [ ] DELETE ​/coordenador​/postagens​/{idpostagem}
+- [x] DELETE ​/coordenador​/postagens​/{idpostagem}
 
 - [ ] POST ​/coordenador​/relatorios
 
