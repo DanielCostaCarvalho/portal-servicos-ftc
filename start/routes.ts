@@ -71,6 +71,8 @@ Route.group(() => {
     'ServicosController.desvincularProfessorServico'
   )
   Route.post('servicos/:idServico/agendamentos', 'AgendasController.coordenadorAbrir')
+  Route.post('postagens', 'PostagensController.coordenadorCriar')
+  Route.get('postagens', 'PostagensController.coordenadorBuscar')
 })
   .prefix('coordenador')
   .middleware(['jwt', 'coordenador'])

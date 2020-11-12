@@ -106,9 +106,9 @@ Para se autenticar na API
 
 - [x] POST ​/coordenador​/servicos​/{idservico}​/agendamentos
 
-- [ ] GET ​/coordenador​/postagens
+- [x] GET ​/coordenador​/postagens
 
-- [ ] POST ​/coordenador​/postagens
+- [x] POST ​/coordenador​/postagens
 
 - [ ] PUT ​/coordenador​/postagens​/{idpostagem}
 

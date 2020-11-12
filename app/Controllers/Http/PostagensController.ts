@@ -225,4 +225,68 @@ export default class PostagensController {
       return response.badRequest({ error })
     }
   }
+  public async coordenadorBuscar({ request }: HttpContextContract) {
+    const { usuario } = request.only(['usuario'])
+
+    const categorias = await Categoria.query().select('id').where('id_coordenador', '=', usuario.id)
+
+    const idCategorias = categorias.map((cat) => cat.id)
+
+    const postagens = await Postagem.query().whereIn('id_categoria', idCategorias)
+
+    return postagens
+  }
+  public async coordenadorCriar({ request, response }: HttpContextContract) {
+    const { titulo, mensagem, id_categoria, ativa, data_expiracao, usuario } = request.only([
+      'dias',
+      'hora_inicial',
+      'hora_final',
+      'duracao',
+      'id_professor',
+      'usuario',
+    ])
+
+    const schemaDaRequisicao = schema.create({
+      titulo: schema.string(),
+      mensagem: schema.string(),
+      id_categoria: schema.number([rules.unsigned()]),
+      ativa: schema.boolean(),
+      data_expiracao: schema.date(),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const categoria = await Categoria.find(id_categoria)
+
+    if (!categoria) {
+      return response.badRequest({ mensagem: 'A categoria selecionada não existe' })
+    }
+
+    if (categoria.id_coordenador != usuario.id) {
+      return response.forbidden({
+        mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
+      })
+    }
+
+    await Postagem.create({
+      titulo,
+      mensagem,
+      id_unidade: categoria.id,
+      id_categoria: categoria.id,
+      ativa,
+      data_expiracao,
+    })
+
+    return response.status(201)
+  }
 }
