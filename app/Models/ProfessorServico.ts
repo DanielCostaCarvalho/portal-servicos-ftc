@@ -19,9 +19,9 @@ export default class ProfessorServico extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Servico, {foreignKey: 'id_servico'})
+  @belongsTo(() => Servico, { foreignKey: 'id_servico' })
   public servico: BelongsTo<typeof Servico>
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_professor'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_professor' })
   public professor: BelongsTo<typeof Usuario>
 }

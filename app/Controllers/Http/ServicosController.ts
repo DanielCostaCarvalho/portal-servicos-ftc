@@ -41,30 +41,30 @@ export default class ServicosController {
       return servicos
     } catch (error) {
       console.log(error)
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
-  public async getServicos({response, params }: HttpContextContract) {
+  public async getServicos({ response, params }: HttpContextContract) {
     try {
-
       const idCategoria = params.idCategoria
 
       const categoria = await Categoria.find(idCategoria)
 
-      if(!categoria) {
+      if (!categoria) {
         return response.status(401).json({
-          'mensagem': 'Categoria não encontrada',
+          mensagem: 'Categoria não encontrada',
         })
       }
 
-      const servicos = await Servico.query().select(['id', 'nome'])
-        .where('id_categoria',idCategoria)
+      const servicos = await Servico.query()
+        .select(['id', 'nome'])
+        .where('id_categoria', idCategoria)
 
       return servicos
     } catch (error) {
       console.log(error)
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -145,7 +145,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -211,7 +211,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -239,7 +239,7 @@ export default class ServicosController {
 
       return response.status(201).json({ mensagem: 'Serviço deletado com sucesso' })
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -299,7 +299,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -352,7 +352,7 @@ export default class ServicosController {
         return response.status(401).json(erro)
       }
 
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
     }
   }
 
@@ -390,7 +390,30 @@ export default class ServicosController {
 
       return servico
     } catch (error) {
-      return response.badRequest({ error })
+      return response.badRequest({ mensagem: error })
+    }
+  }
+
+  public async getServicosProfessor({ request, response }: HttpContextContract) {
+    try {
+      const usuario: Usuario = request.input('usuario')
+
+      const professorServicos = await ProfessorServico.query()
+        .where('id_professor', usuario.id)
+        .select('id_servico')
+        .preload('servico', (query) => {
+          query.select(['id', 'nome'])
+        })
+
+      if (!professorServicos) {
+        return response.status(401).json({
+          mensagem: 'Serviços não encontrados',
+        })
+      }
+
+      return professorServicos.map((professorServico) => professorServico.servico)
+    } catch (error) {
+      return response.badRequest({ mensagem: error })
     }
   }
 }

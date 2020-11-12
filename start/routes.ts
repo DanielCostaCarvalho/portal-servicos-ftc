@@ -28,6 +28,12 @@ Route.post('cadastro', 'UsuariosController.cadastro')
 Route.post('autenticacao', 'UsuariosController.login')
 
 Route.group(() => {
+  Route.get('minhaConta', 'UsuariosController.dadosUsuarioLogado')
+  Route.put('atualizarDados', 'UsuariosController.atualizarDadosProprios')
+  Route.put('atualizarSenha', 'UsuariosController.atualizarSenha')
+}).middleware('jwt')
+
+Route.group(() => {
   Route.post('unidades', 'UnidadesController.cadastro')
   Route.get('unidades', 'UnidadesController.getUnidadesMaster')
   Route.get('unidades/:id', 'UnidadesController.getUnidadeId')
@@ -79,6 +85,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post('servicos/:idServico/agendamentos', 'AgendasController.professorAbrir')
+  Route.get('servicos', 'ServicosController.getServicosProfessor')
   Route.get(
     'servicos/:idServico/agendamentos/:idAgendamento',
     'AgendasController.professorDetalhes'
