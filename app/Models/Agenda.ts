@@ -4,6 +4,8 @@ import Usuario from './Usuario'
 import Servico from './Servico'
 
 export default class Agenda extends BaseModel {
+  public static table = 'agendas'
+
   @column({ isPrimary: true })
   public id: number
 

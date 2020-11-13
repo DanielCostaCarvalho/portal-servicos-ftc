@@ -193,7 +193,8 @@ export default class AgendasController {
     }
   }
 
-  public async professorBuscar({ request, response, params }: HttpContextContract) {
+  public async professorBuscar({ request, response }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { data_inicial, data_final, usuario } = request.only([
       'data_inicial',
       'data_final',
@@ -231,7 +232,14 @@ export default class AgendasController {
       .preload('responsavel_cancelamento', (query) => {
         query.select(['id', 'nome'])
       })
-      .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
+      .select(
+        'id',
+        'data_hora',
+        'atendente',
+        'observacao',
+        'justificativa_cancelamento',
+        'atendido'
+      )
       .where('id_professor_responsavel', usuario.id)
       .andWhereBetween('data_hora', [
         DateTime.fromISO(data_inicial).toSQLDate(),
