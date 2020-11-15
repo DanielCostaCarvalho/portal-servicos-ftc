@@ -224,7 +224,7 @@ export default class AgendasController {
 
     const agendas = await Agenda.query()
       .preload('cliente', (query) => {
-        query.select(['id', 'nome', 'id_professor_responsavel', 'id_responsavel_cancelamento'])
+        query.select(['id', 'nome'])
       })
       .preload('professor_responsavel', (query) => {
         query.select(['id', 'nome'])
@@ -235,6 +235,9 @@ export default class AgendasController {
       .select(
         'id',
         'data_hora',
+        'id_cliente',
+        'id_professor_responsavel',
+        'id_responsavel_cancelamento',
         'atendente',
         'observacao',
         'justificativa_cancelamento',
