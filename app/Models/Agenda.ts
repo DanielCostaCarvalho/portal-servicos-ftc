@@ -9,7 +9,7 @@ export default class Agenda extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column.dateTime()
+  @column()
   public data_hora: DateTime
 
   @column()

@@ -22,9 +22,9 @@ export default class Categoria extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Usuario, {foreignKey: 'id_coordenador'})
+  @belongsTo(() => Usuario, { foreignKey: 'id_coordenador' })
   public coordenador: BelongsTo<typeof Usuario>
 
-  @belongsTo(() => Unidade, {foreignKey: 'id_unidade'})
+  @belongsTo(() => Unidade, { foreignKey: 'id_unidade' })
   public unidade: BelongsTo<typeof Unidade>
 }
