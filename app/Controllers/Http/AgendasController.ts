@@ -3,11 +3,11 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import ProfessorServico from 'App/Models/ProfessorServico'
 import Agenda from 'App/Models/Agenda'
-import Desistencia from 'App/Models/Desistencia'
 import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class AgendasController {
   public async coordenadorAbrir({ request, response, params }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { id_professor, dias, hora_inicial, hora_final, duracao } = request.only([
       'dias',
       'hora_inicial',
@@ -101,6 +101,7 @@ export default class AgendasController {
   }
 
   public async professorAbrir({ request, response, params }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { dias, hora_inicial, hora_final, duracao, usuario } = request.only([
       'dias',
       'hora_inicial',
@@ -235,6 +236,7 @@ export default class AgendasController {
       .select(
         'id',
         'data_hora',
+        'id_servico',
         'id_cliente',
         'id_professor_responsavel',
         'id_responsavel_cancelamento',
@@ -456,7 +458,7 @@ export default class AgendasController {
       return response.badRequest({ mensagem: 'Não existe esse agendamento' })
     }
 
-    if (agenda.id_cliente == usuario.id) {
+    if (agenda.id_cliente === usuario.id) {
       return response.status(201)
     }
 
@@ -473,7 +475,7 @@ export default class AgendasController {
     return response.status(201)
   }
 
-  public async clienteBuscar({ request, response, params }: HttpContextContract) {
+  public async clienteBuscar({ request }: HttpContextContract) {
     const { usuario } = request.only(['usuario'])
 
     const agendas = await Agenda.query()
