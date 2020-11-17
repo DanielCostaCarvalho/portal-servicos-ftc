@@ -92,8 +92,8 @@ Route.group(() => {
     'servicos/:idServico/agendamentos/:idAgendamento',
     'AgendasController.professorDetalhes'
   )
-  Route.delete(
-    'servicos/:idServico/agendamentos/:idAgendamento',
+  Route.post(
+    'servicos/:idServico/agendamentos/:idAgendamento/cancelar',
     'AgendasController.professorCancelamento'
   )
   Route.post('agendamentos', 'AgendasController.professorBuscar')

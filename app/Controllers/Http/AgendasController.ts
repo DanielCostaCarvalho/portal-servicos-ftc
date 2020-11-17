@@ -270,9 +270,15 @@ export default class AgendasController {
     }
 
     const agendamento = await Agenda.query()
-      .preload('professor_responsavel')
-      .preload('responsavel_cancelamento')
-      .preload('cliente')
+      .preload('professor_responsavel', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('responsavel_cancelamento', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('cliente', (query) => {
+        query.select(['id', 'nome'])
+      })
       .where('id', '=', idAgendamento)
       .andWhere('id_servico', '=', idServico)
       .first()
