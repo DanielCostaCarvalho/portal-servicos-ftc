@@ -11,16 +11,17 @@ export const gerarTokenJWT = (usuario: Usuario) => {
   const expiresIn = 24 * 60 * 60
   const payload = {
     usuario: usuario.id,
+    nome: usuario.nome,
     tipo: usuario.tipo,
   }
 
-  const token = jwt.sign(payload, secret, {expiresIn})
+  const token = jwt.sign(payload, secret, { expiresIn })
 
   return token
 }
 
-export const verificarUsuarioMaster = (usuario: Usuario, {response }: HttpContextContract) => {
-  if(usuario.tipo === 'Master') {
+export const verificarUsuarioMaster = (usuario: Usuario, { response }: HttpContextContract) => {
+  if (usuario.tipo === 'Master') {
     return true
   }
 
