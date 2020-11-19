@@ -124,7 +124,7 @@ Para se autenticar na API
 
 - [ ] POST ​/coordenador​/relatorios
 
-- [ ] POST ​/coordenador​/relatorio​/cancelados​/servicos
+- [x] POST ​/coordenador​/relatorio​/cancelados​/servicos
 
 - [ ] POST ​/coordenador​/relatorio​/cancelados​/servicos​/{idservico}
 

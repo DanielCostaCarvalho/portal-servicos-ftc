@@ -4,11 +4,14 @@ import {
   BelongsTo,
   belongsTo,
   column,
+  HasMany,
+  hasMany,
   ManyToMany,
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import Categoria from './Categoria'
 import Usuario from './Usuario'
+import Agenda from './Agenda'
 
 export default class Servico extends BaseModel {
   @column({ isPrimary: true })
@@ -35,4 +38,9 @@ export default class Servico extends BaseModel {
     pivotRelatedForeignKey: 'id_professor',
   })
   public professores: ManyToMany<typeof Usuario>
+
+  @hasMany(() => Agenda, {
+    foreignKey: 'id_servico',
+  })
+  public agendas: HasMany<typeof Agenda>
 }
