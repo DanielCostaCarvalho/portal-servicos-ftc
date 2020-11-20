@@ -13,6 +13,9 @@ export default class Agenda extends BaseModel {
   public data_hora: DateTime
 
   @column()
+  public duracao: number
+
+  @column()
   public id_servico: number
 
   @column()

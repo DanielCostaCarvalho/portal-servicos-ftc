@@ -87,7 +87,12 @@ export default class AgendasController {
     })
 
     const agendas = datasAgendas.map((data) => {
-      return { id_servico: idServico, data_hora: data, id_professor_responsavel: id_professor }
+      return {
+        id_servico: idServico,
+        data_hora: data,
+        id_professor_responsavel: id_professor,
+        duracao,
+      }
     })
 
     try {
@@ -181,7 +186,12 @@ export default class AgendasController {
     })
 
     const agendas = datasAgendas.map((data) => {
-      return { id_servico: idServico, data_hora: data, id_professor_responsavel: usuario.id }
+      return {
+        id_servico: idServico,
+        data_hora: data,
+        id_professor_responsavel: usuario.id,
+        duracao,
+      }
     })
 
     try {
