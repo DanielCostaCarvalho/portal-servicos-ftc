@@ -461,7 +461,7 @@ export default class AgendasController {
   }
 
   public async clienteAgendar({ request, response, params }: HttpContextContract) {
-    const { usuario } = request.only(['mes'])
+    const { usuario } = request.only(['usuario'])
     const { idAgendamento } = params
 
     if (!idAgendamento) {
