@@ -495,21 +495,18 @@ export default class AgendasController {
     const { usuario } = request.only(['usuario'])
 
     const agendas = await Agenda.query()
-      .preload('cliente', (query) => {
-        query.select([
-          'id',
-          'nome',
-          'data_hora',
-          'atendente',
-          'atendido',
-          'justificativa_cancelamento',
-          'id_responsavel_cancelamento',
-        ])
-      })
       .preload('responsavel_cancelamento', (query) => {
         query.select(['id', 'nome'])
       })
-      .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
+      .select([
+        'id',
+        'data_hora',
+        'atendente',
+        'observacao',
+        'justificativa_cancelamento',
+        'atendido',
+        'id_responsavel_cancelamento',
+      ])
       .where('id_cliente', usuario.id)
 
     return agendas
