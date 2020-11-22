@@ -498,14 +498,17 @@ export default class AgendasController {
       .preload('responsavel_cancelamento', (query) => {
         query.select(['id', 'nome'])
       })
+      .preload('servico', (query) => {
+        query.select(['id', 'nome', 'id_categoria']).preload('categoria', (query) => {
+          query.select(['id', 'nome'])
+        })
+      })
       .select([
         'id',
         'data_hora',
-        'atendente',
-        'observacao',
         'justificativa_cancelamento',
-        'atendido',
         'id_responsavel_cancelamento',
+        'id_servico',
       ])
       .where('id_cliente', usuario.id)
 
