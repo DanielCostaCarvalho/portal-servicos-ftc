@@ -87,7 +87,12 @@ export default class AgendasController {
     })
 
     const agendas = datasAgendas.map((data) => {
-      return { id_servico: idServico, data_hora: data, id_professor_responsavel: id_professor }
+      return {
+        id_servico: idServico,
+        data_hora: data,
+        id_professor_responsavel: id_professor,
+        duracao,
+      }
     })
 
     try {
@@ -181,7 +186,12 @@ export default class AgendasController {
     })
 
     const agendas = datasAgendas.map((data) => {
-      return { id_servico: idServico, data_hora: data, id_professor_responsavel: usuario.id }
+      return {
+        id_servico: idServico,
+        data_hora: data,
+        id_professor_responsavel: usuario.id,
+        duracao,
+      }
     })
 
     try {
@@ -451,7 +461,7 @@ export default class AgendasController {
   }
 
   public async clienteAgendar({ request, response, params }: HttpContextContract) {
-    const { usuario } = request.only(['mes'])
+    const { usuario } = request.only(['usuario'])
     const { idAgendamento } = params
 
     if (!idAgendamento) {
@@ -485,21 +495,21 @@ export default class AgendasController {
     const { usuario } = request.only(['usuario'])
 
     const agendas = await Agenda.query()
-      .preload('cliente', (query) => {
-        query.select([
-          'id',
-          'nome',
-          'data_hora',
-          'atendente',
-          'atendido',
-          'justificativa_cancelamento',
-          'id_responsavel_cancelamento',
-        ])
-      })
       .preload('responsavel_cancelamento', (query) => {
         query.select(['id', 'nome'])
       })
-      .select('id, data_hora, atendente, observacao, justificativa_cancelamento, atendido')
+      .preload('servico', (query) => {
+        query.select(['id', 'nome', 'id_categoria']).preload('categoria', (query) => {
+          query.select(['id', 'nome'])
+        })
+      })
+      .select([
+        'id',
+        'data_hora',
+        'justificativa_cancelamento',
+        'id_responsavel_cancelamento',
+        'id_servico',
+      ])
       .where('id_cliente', usuario.id)
 
     return agendas
