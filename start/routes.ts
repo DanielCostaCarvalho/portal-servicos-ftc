@@ -82,6 +82,7 @@ Route.group(() => {
   Route.put('postagens/:idPostagem', 'PostagensController.coordenadorEditar')
   Route.delete('postagens/:idPostagem', 'PostagensController.coordenadorDeletar')
   Route.post('relatorio/cancelado/servicos', 'RelatoriosController.servicosCancelados')
+  Route.post('relatorio/cancelado/servicos/:idServico', 'RelatoriosController.canceladosServico')
 })
   .prefix('coordenador')
   .middleware(['jwt', 'coordenador'])

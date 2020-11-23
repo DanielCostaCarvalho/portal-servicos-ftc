@@ -126,7 +126,7 @@ Para se autenticar na API
 
 - [x] POST ​/coordenador​/relatorio​/cancelados​/servicos
 
-- [ ] POST ​/coordenador​/relatorio​/cancelados​/servicos​/{idservico}
+- [x] POST ​/coordenador​/relatorio​/cancelados​/servicos​/{idservico}
 
 ## Professor
 
