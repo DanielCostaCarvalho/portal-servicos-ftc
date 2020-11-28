@@ -122,3 +122,9 @@ Route.group(() => {
 })
   .prefix('cliente')
   .middleware(['jwt', 'cliente'])
+
+Route.group(() => {
+  Route.post('relatorios', 'RelatoriosController.contagensAgendamentos')
+})
+  .prefix('diretor')
+  .middleware(['jwt', 'diretor'])
