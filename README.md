@@ -144,4 +144,4 @@ Para se autenticar na API
 
 ## Diretor
 
-- [ ] POST ​/diretor​/relatorios
+- [x] POST ​/diretor​/relatorios
