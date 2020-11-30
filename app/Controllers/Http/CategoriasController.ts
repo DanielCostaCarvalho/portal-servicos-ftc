@@ -187,6 +187,25 @@ export default class CategoriasController {
     }
   }
 
+  public async categoriasDiretor({ request, response }: HttpContextContract) {
+    try {
+      const usuario: Usuario = request.input('usuario')
+
+      const unidades = await Unidade.query().where('id_diretor', usuario.id).select(['id'])
+
+      const categorias = await Categoria.query()
+        .select(['id', 'nome'])
+        .whereIn(
+          'id_unidade',
+          unidades.map((unidade) => unidade.id)
+        )
+
+      return categorias
+    } catch (error) {
+      return response.badRequest({ error })
+    }
+  }
+
   public async getCategoriaId({ response, params }: HttpContextContract) {
     try {
       const categoria = await Categoria.query()

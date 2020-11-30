@@ -57,7 +57,9 @@ export default class RelatoriosController {
     }
 
     const agendas = await Agenda.query()
-      .preload('responsavel_cancelamento')
+      .preload('responsavel_cancelamento', (query) => {
+        query.select('nome')
+      })
       .select(
         'id',
         'data_hora',
@@ -116,6 +118,9 @@ export default class RelatoriosController {
             DateTime.fromISO(data_inicial).toSQLDate(),
             DateTime.fromISO(data_final).toSQLDate(),
           ])
+          .preload('responsavel_cancelamento', (query) => {
+            query.select('nome')
+          })
       })
       .select('id', 'nome')
       .whereIn('id_categoria', idCategorias)
