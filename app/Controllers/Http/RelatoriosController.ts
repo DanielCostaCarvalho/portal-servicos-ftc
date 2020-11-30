@@ -179,7 +179,7 @@ export default class RelatoriosController {
       })
 
       const quantidadesPromises = status.map((nome) => {
-        if (nome == 'cancelado') {
+        if (nome === 'cancelado') {
           return Agenda.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)
@@ -193,11 +193,11 @@ export default class RelatoriosController {
               return { status: nome, quantidade: retorno[nome] }
             })
         }
-        if (nome == 'desistente') {
-          Desistencia.query()
+        if (nome === 'desistente') {
+          return Desistencia.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)
-            .andWhereBetween('data_hora', [
+            .andWhereBetween('created_at', [
               DateTime.fromISO(data_inicial).toSQLDate(),
               DateTime.fromISO(data_final).toSQLDate(),
             ])
@@ -206,7 +206,7 @@ export default class RelatoriosController {
               return { status: nome, quantidade: retorno[nome] }
             })
         }
-        if (nome == 'atendido') {
+        if (nome === 'atendido') {
           return Agenda.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)
@@ -220,7 +220,7 @@ export default class RelatoriosController {
               return { status: nome, quantidade: retorno[nome] }
             })
         }
-        if (nome == 'ausente') {
+        if (nome === 'ausente') {
           return Agenda.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)
@@ -236,7 +236,7 @@ export default class RelatoriosController {
               return { status: nome, quantidade: retorno[nome] }
             })
         }
-        if (nome == 'vago') {
+        if (nome === 'vago') {
           return Agenda.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)

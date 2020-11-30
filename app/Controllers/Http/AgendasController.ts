@@ -541,10 +541,11 @@ export default class AgendasController {
     await Database.transaction(async (trx) => {
       agendamento.useTransaction(trx)
       await Promise.all([
-        trx
-          .insertQuery()
-          .table('desistencias')
-          .insert({ id_cliente: usuario.id, id_servico: agendamento.id_servico }),
+        trx.insertQuery().table('desistencias').insert({
+          id_cliente: usuario.id,
+          id_servico: agendamento.id_servico,
+          created_at: DateTime.local().toSQL(),
+        }),
 
         agendamento.save(),
       ])
