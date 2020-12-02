@@ -426,6 +426,7 @@ export default class UsuarioController {
         id: usuarioLogado.id,
         nome: usuarioLogado.nome,
         email: usuarioLogado.email,
+        tipo_usuario: usuarioLogado.tipo,
       }
     } catch (error) {
       return response.badRequest({ mensagem: error })
