@@ -4,7 +4,6 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Categoria from 'App/Models/Categoria'
 import Servico from 'App/Models/Servico'
 import { DateTime } from 'luxon'
-import Agendas from 'Database/migrations/1604672665727_add_atendido_columns'
 import Desistencia from 'App/Models/Desistencia'
 
 export default class RelatoriosController {
@@ -197,7 +196,7 @@ export default class RelatoriosController {
           return Desistencia.query()
             .count(`* as ${nome}`)
             .whereIn('id_servico', idServicos)
-            .andWhereBetween('created_at', [
+            .andWhereBetween('data_hora', [
               DateTime.fromISO(data_inicial).toSQLDate(),
               DateTime.fromISO(data_final).toSQLDate(),
             ])

@@ -545,6 +545,7 @@ export default class AgendasController {
           id_cliente: usuario.id,
           id_servico: agendamento.id_servico,
           created_at: DateTime.local().toSQL(),
+          data_hora: agendamento.data_hora,
         }),
 
         agendamento.save(),
