@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node ace build",
     "start": "node ace serve --watch",
+    "start-production": "ENV_SILENT=true node build/server.js",
     "lint": "eslint . --ext=.ts",
     "commit": "cz"
   },
