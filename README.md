@@ -122,7 +122,7 @@ Para se autenticar na API
 
 - [x] DELETE ​/coordenador​/postagens​/{idpostagem}
 
-- [ ] POST ​/coordenador​/relatorios
+- [x] POST ​/coordenador​/relatorios
 
 - [x] POST ​/coordenador​/relatorio​/cancelados​/servicos
 

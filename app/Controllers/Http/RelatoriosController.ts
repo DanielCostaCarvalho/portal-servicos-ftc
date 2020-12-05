@@ -262,4 +262,149 @@ export default class RelatoriosController {
 
     return retorno
   }
+
+  public async contagensAgendamentosCoordenador({
+    request,
+    response,
+    params,
+  }: HttpContextContract) {
+    const { data_inicial, data_final, servicos, status, usuario } = request.only([
+      'data_inicial',
+      'data_final',
+      'categorias',
+      'status',
+      'usuario',
+    ])
+
+    const schemaDaRequisicao = schema.create({
+      data_inicial: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+      data_final: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+      servicos: schema.array().members(
+        schema.number([
+          rules.exists({
+            table: 'servicos',
+            column: 'id',
+          }),
+        ])
+      ),
+      status: schema
+        .array([rules.minLength(1), rules.distinct('*')])
+        .members(schema.enum(['cancelado', 'desistente', 'atendido', 'ausente', 'vago'])),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const categorias = await Categoria.query().select('id').where('id_coordenador', usuario.id)
+
+    const categoriasId = categorias.map((categoria) => categoria.id)
+
+    const infoServicos = await Servico.query().whereIn('id', servicos)
+
+    const servicoNaoPertencente = infoServicos.some((servico) => {
+      const indiceCategoria = categoriasId.indexOf(servico.id_categoria)
+      const isCategoriaNaoEncontrada = indiceCategoria == -1
+
+      return isCategoriaNaoEncontrada
+    })
+
+    if (servicoNaoPertencente) {
+      return response.forbidden({
+        mensagem: 'Foram solicitados serviços para o qual esse usuário não possui acesso!',
+      })
+    }
+
+    const idServicos = servicos.map((servico) => servico.id)
+
+    const quantidadesPromises = status.map((nome) => {
+      if (nome === 'cancelado') {
+        return Agenda.query()
+          .count(`* as ${nome}`)
+          .whereIn('id_servico', idServicos)
+          .andWhereNotNull('id_responsavel_cancelamento')
+          .andWhereBetween('data_hora', [
+            DateTime.fromISO(data_inicial).toSQLDate(),
+            DateTime.fromISO(data_final).toSQLDate(),
+          ])
+          .first()
+          .then((retorno) => {
+            return { status: nome, quantidade: retorno[nome] }
+          })
+      }
+      if (nome === 'desistente') {
+        return Desistencia.query()
+          .count(`* as ${nome}`)
+          .whereIn('id_servico', idServicos)
+          .andWhereBetween('data_hora', [
+            DateTime.fromISO(data_inicial).toSQLDate(),
+            DateTime.fromISO(data_final).toSQLDate(),
+          ])
+          .first()
+          .then((retorno) => {
+            return { status: nome, quantidade: retorno[nome] }
+          })
+      }
+      if (nome === 'atendido') {
+        return Agenda.query()
+          .count(`* as ${nome}`)
+          .whereIn('id_servico', idServicos)
+          .andWhere('atendido', true)
+          .andWhereBetween('data_hora', [
+            DateTime.fromISO(data_inicial).toSQLDate(),
+            DateTime.fromISO(data_final).toSQLDate(),
+          ])
+          .first()
+          .then((retorno) => {
+            return { status: nome, quantidade: retorno[nome] }
+          })
+      }
+      if (nome === 'ausente') {
+        return Agenda.query()
+          .count(`* as ${nome}`)
+          .whereIn('id_servico', idServicos)
+          .andWhere('atendido', false)
+          .andWhereNotNull('id_cliente')
+          .andWhere('data_hora', '<', DateTime.local().toSQL())
+          .andWhereBetween('data_hora', [
+            DateTime.fromISO(data_inicial).toSQLDate(),
+            DateTime.fromISO(data_final).toSQLDate(),
+          ])
+          .first()
+          .then((retorno) => {
+            return { status: nome, quantidade: retorno[nome] }
+          })
+      }
+      if (nome === 'vago') {
+        return Agenda.query()
+          .count(`* as ${nome}`)
+          .whereIn('id_servico', idServicos)
+          .andWhereNull('id_cliente')
+          .andWhereBetween('data_hora', [
+            DateTime.fromISO(data_inicial).toSQLDate(),
+            DateTime.fromISO(data_final).toSQLDate(),
+          ])
+          .first()
+          .then((retorno) => {
+            return { status: nome, quantidade: retorno[nome] }
+          })
+      }
+    })
+
+    const quantidades = await Promise.all(quantidadesPromises)
+
+    return quantidades
+  }
 }
