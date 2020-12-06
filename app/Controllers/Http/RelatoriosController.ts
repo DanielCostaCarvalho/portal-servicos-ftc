@@ -325,82 +325,92 @@ export default class RelatoriosController {
       })
     }
 
-    const quantidadesPromises = status.map((nome) => {
-      if (nome === 'cancelado') {
-        return Agenda.query()
-          .count(`* as ${nome}`)
-          .whereIn('id_servico', servicos)
-          .andWhereNotNull('id_responsavel_cancelamento')
-          .andWhereBetween('data_hora', [
-            DateTime.fromISO(data_inicial).toSQLDate(),
-            DateTime.fromISO(data_final).toSQLDate(),
-          ])
-          .first()
-          .then((retorno) => {
-            return { status: nome, quantidade: retorno[nome] }
-          })
-      }
-      if (nome === 'desistente') {
-        return Desistencia.query()
-          .count(`* as ${nome}`)
-          .whereIn('id_servico', servicos)
-          .andWhereBetween('data_hora', [
-            DateTime.fromISO(data_inicial).toSQLDate(),
-            DateTime.fromISO(data_final).toSQLDate(),
-          ])
-          .first()
-          .then((retorno) => {
-            return { status: nome, quantidade: retorno[nome] }
-          })
-      }
-      if (nome === 'atendido') {
-        return Agenda.query()
-          .count(`* as ${nome}`)
-          .whereIn('id_servico', servicos)
-          .andWhere('atendido', true)
-          .andWhereBetween('data_hora', [
-            DateTime.fromISO(data_inicial).toSQLDate(),
-            DateTime.fromISO(data_final).toSQLDate(),
-          ])
-          .first()
-          .then((retorno) => {
-            return { status: nome, quantidade: retorno[nome] }
-          })
-      }
-      if (nome === 'ausente') {
-        return Agenda.query()
-          .count(`* as ${nome}`)
-          .whereIn('id_servico', servicos)
-          .andWhere('atendido', false)
-          .andWhereNotNull('id_cliente')
-          .andWhere('data_hora', '<', DateTime.local().toSQL())
-          .andWhereBetween('data_hora', [
-            DateTime.fromISO(data_inicial).toSQLDate(),
-            DateTime.fromISO(data_final).toSQLDate(),
-          ])
-          .first()
-          .then((retorno) => {
-            return { status: nome, quantidade: retorno[nome] }
-          })
-      }
-      if (nome === 'vago') {
-        return Agenda.query()
-          .count(`* as ${nome}`)
-          .whereIn('id_servico', servicos)
-          .andWhereNull('id_cliente')
-          .andWhereBetween('data_hora', [
-            DateTime.fromISO(data_inicial).toSQLDate(),
-            DateTime.fromISO(data_final).toSQLDate(),
-          ])
-          .first()
-          .then((retorno) => {
-            return { status: nome, quantidade: retorno[nome] }
-          })
+    const resposta = servicos.map(async (idServico) => {
+      const servico = await Servico.find(idServico)
+
+      const quantidadesPromises = status.map((nome) => {
+        if (nome === 'cancelado') {
+          return Agenda.query()
+            .count(`* as ${nome}`)
+            .where('id_servico', idServico)
+            .andWhereNotNull('id_responsavel_cancelamento')
+            .andWhereBetween('data_hora', [
+              DateTime.fromISO(data_inicial).toSQLDate(),
+              DateTime.fromISO(data_final).toSQLDate(),
+            ])
+            .first()
+            .then((retorno) => {
+              return { status: nome, quantidade: retorno[nome] }
+            })
+        }
+        if (nome === 'desistente') {
+          return Desistencia.query()
+            .count(`* as ${nome}`)
+            .where('id_servico', idServico)
+            .andWhereBetween('data_hora', [
+              DateTime.fromISO(data_inicial).toSQLDate(),
+              DateTime.fromISO(data_final).toSQLDate(),
+            ])
+            .first()
+            .then((retorno) => {
+              return { status: nome, quantidade: retorno[nome] }
+            })
+        }
+        if (nome === 'atendido') {
+          return Agenda.query()
+            .count(`* as ${nome}`)
+            .where('id_servico', idServico)
+            .andWhere('atendido', true)
+            .andWhereBetween('data_hora', [
+              DateTime.fromISO(data_inicial).toSQLDate(),
+              DateTime.fromISO(data_final).toSQLDate(),
+            ])
+            .first()
+            .then((retorno) => {
+              return { status: nome, quantidade: retorno[nome] }
+            })
+        }
+        if (nome === 'ausente') {
+          return Agenda.query()
+            .count(`* as ${nome}`)
+            .where('id_servico', idServico)
+            .andWhere('atendido', false)
+            .andWhereNotNull('id_cliente')
+            .andWhere('data_hora', '<', DateTime.local().toSQL())
+            .andWhereBetween('data_hora', [
+              DateTime.fromISO(data_inicial).toSQLDate(),
+              DateTime.fromISO(data_final).toSQLDate(),
+            ])
+            .first()
+            .then((retorno) => {
+              return { status: nome, quantidade: retorno[nome] }
+            })
+        }
+        if (nome === 'vago') {
+          return Agenda.query()
+            .count(`* as ${nome}`)
+            .where('id_servico', idServico)
+            .andWhereNull('id_cliente')
+            .andWhereBetween('data_hora', [
+              DateTime.fromISO(data_inicial).toSQLDate(),
+              DateTime.fromISO(data_final).toSQLDate(),
+            ])
+            .first()
+            .then((retorno) => {
+              return { status: nome, quantidade: retorno[nome] }
+            })
+        }
+      })
+
+      const quantidades = await Promise.all(quantidadesPromises)
+
+      return {
+        nome: servico?.nome,
+        valores: quantidades,
       }
     })
+    const retorno = await Promise.all(resposta)
 
-    const quantidades = await Promise.all(quantidadesPromises)
-
-    return quantidades
+    return retorno
   }
 }
