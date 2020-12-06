@@ -49,7 +49,7 @@ export default class RelatoriosController {
 
     const categoria = await Categoria.query().select('id').where('id', servico.id).first()
 
-    if (!categoria || categoria.id_coordenador != usuario.id) {
+    if (!categoria || categoria.id_coordenador !== usuario.id) {
       response.forbidden({
         mensagem: 'Esse usuário não tem permissão para visualizar esse serviço!',
       })
@@ -76,7 +76,7 @@ export default class RelatoriosController {
     return agendas
   }
 
-  public async servicosCancelados({ request, response, params }: HttpContextContract) {
+  public async servicosCancelados({ request, response }: HttpContextContract) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { data_inicial, data_final, usuario } = request.only([
       'data_inicial',
@@ -127,8 +127,9 @@ export default class RelatoriosController {
     return servicos
   }
 
-  public async contagensAgendamentos({ request, response, params }: HttpContextContract) {
-    const { data_inicial, data_final, categorias, status, usuario } = request.only([
+  public async contagensAgendamentos({ request, response }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { data_inicial, data_final, categorias, status } = request.only([
       'data_inicial',
       'data_final',
       'categorias',
@@ -263,15 +264,12 @@ export default class RelatoriosController {
     return retorno
   }
 
-  public async contagensAgendamentosCoordenador({
-    request,
-    response,
-    params,
-  }: HttpContextContract) {
+  public async contagensAgendamentosCoordenador({ request, response }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { data_inicial, data_final, servicos, status, usuario } = request.only([
       'data_inicial',
       'data_final',
-      'categorias',
+      'servicos',
       'status',
       'usuario',
     ])
@@ -316,7 +314,7 @@ export default class RelatoriosController {
 
     const servicoNaoPertencente = infoServicos.some((servico) => {
       const indiceCategoria = categoriasId.indexOf(servico.id_categoria)
-      const isCategoriaNaoEncontrada = indiceCategoria == -1
+      const isCategoriaNaoEncontrada = indiceCategoria === -1
 
       return isCategoriaNaoEncontrada
     })
@@ -327,13 +325,11 @@ export default class RelatoriosController {
       })
     }
 
-    const idServicos = servicos.map((servico) => servico.id)
-
     const quantidadesPromises = status.map((nome) => {
       if (nome === 'cancelado') {
         return Agenda.query()
           .count(`* as ${nome}`)
-          .whereIn('id_servico', idServicos)
+          .whereIn('id_servico', servicos)
           .andWhereNotNull('id_responsavel_cancelamento')
           .andWhereBetween('data_hora', [
             DateTime.fromISO(data_inicial).toSQLDate(),
@@ -347,7 +343,7 @@ export default class RelatoriosController {
       if (nome === 'desistente') {
         return Desistencia.query()
           .count(`* as ${nome}`)
-          .whereIn('id_servico', idServicos)
+          .whereIn('id_servico', servicos)
           .andWhereBetween('data_hora', [
             DateTime.fromISO(data_inicial).toSQLDate(),
             DateTime.fromISO(data_final).toSQLDate(),
@@ -360,7 +356,7 @@ export default class RelatoriosController {
       if (nome === 'atendido') {
         return Agenda.query()
           .count(`* as ${nome}`)
-          .whereIn('id_servico', idServicos)
+          .whereIn('id_servico', servicos)
           .andWhere('atendido', true)
           .andWhereBetween('data_hora', [
             DateTime.fromISO(data_inicial).toSQLDate(),
@@ -374,7 +370,7 @@ export default class RelatoriosController {
       if (nome === 'ausente') {
         return Agenda.query()
           .count(`* as ${nome}`)
-          .whereIn('id_servico', idServicos)
+          .whereIn('id_servico', servicos)
           .andWhere('atendido', false)
           .andWhereNotNull('id_cliente')
           .andWhere('data_hora', '<', DateTime.local().toSQL())
@@ -390,7 +386,7 @@ export default class RelatoriosController {
       if (nome === 'vago') {
         return Agenda.query()
           .count(`* as ${nome}`)
-          .whereIn('id_servico', idServicos)
+          .whereIn('id_servico', servicos)
           .andWhereNull('id_cliente')
           .andWhereBetween('data_hora', [
             DateTime.fromISO(data_inicial).toSQLDate(),
