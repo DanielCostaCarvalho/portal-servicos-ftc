@@ -39,7 +39,7 @@ export default class RelatoriosController {
     }
 
     const servico = await Servico.query()
-      .select('id', 'id_categoria')
+      .select('id', 'nome', 'id_categoria')
       .where('id', idServico)
       .first()
 
@@ -47,7 +47,10 @@ export default class RelatoriosController {
       return response.badRequest({ mensagem: 'O serviço especificado não existe!' })
     }
 
-    const categoria = await Categoria.query().select('id').where('id', servico.id).first()
+    const categoria = await Categoria.query()
+      .select(['id', 'id_coordenador'])
+      .where('id', servico.id_categoria)
+      .first()
 
     if (!categoria || categoria.id_coordenador !== usuario.id) {
       response.forbidden({
@@ -72,8 +75,13 @@ export default class RelatoriosController {
         DateTime.fromISO(data_inicial).toSQLDate(),
         DateTime.fromISO(data_final).toSQLDate(),
       ])
+      .where('id_servico', idServico)
 
-    return agendas
+    return {
+      id: servico.id,
+      nome: servico.nome,
+      agendas,
+    }
   }
 
   public async servicosCancelados({ request, response }: HttpContextContract) {
