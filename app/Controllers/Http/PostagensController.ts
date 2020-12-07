@@ -238,13 +238,15 @@ export default class PostagensController {
   }
 
   public async coordenadorCriar({ request, response }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { titulo, mensagem, id_categoria, ativa, data_expiracao, usuario } = request.only([
-      'dias',
-      'hora_inicial',
-      'hora_final',
-      'duracao',
+      'titulo',
+      'mensagem',
       'id_professor',
+      'id_categoria',
+      'data_expiracao',
       'usuario',
+      'ativa',
     ])
 
     const schemaDaRequisicao = schema.create({
@@ -273,7 +275,7 @@ export default class PostagensController {
       return response.badRequest({ mensagem: 'A categoria selecionada não existe' })
     }
 
-    if (categoria.id_coordenador != usuario.id) {
+    if (categoria.id_coordenador !== usuario.id) {
       return response.forbidden({
         mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
       })
@@ -282,10 +284,11 @@ export default class PostagensController {
     await Postagem.create({
       titulo,
       mensagem,
-      id_unidade: categoria.id,
-      id_categoria: categoria.id,
-      ativa,
-      data_expiracao,
+      id_unidade: categoria.id_unidade,
+      id_categoria: categoria?.id,
+      id_usuario: usuario.id,
+      ativa: ativa !== null ? true : false,
+      data_expiracao: data_expiracao !== null ? data_expiracao : null,
     })
 
     return response.status(201)
@@ -304,9 +307,9 @@ export default class PostagensController {
     const schemaDaRequisicao = schema.create({
       titulo: schema.string(),
       mensagem: schema.string(),
-      id_categoria: schema.number([rules.unsigned()]),
-      ativa: schema.boolean(),
-      data_expiracao: schema.date(),
+      id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
+      ...(data.ativa !== undefined && { ativa: schema.boolean() }),
+      ...(data.data_expiracao !== undefined && { data_expiracao: schema.date() }),
     })
 
     try {
