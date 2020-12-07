@@ -36,7 +36,7 @@ export default class Agenda extends BaseModel {
   @column()
   public observacao: string
 
-  @column()
+  @column({ consume: (value) => Boolean(value) })
   public atendido: boolean
 
   @column.dateTime({ autoCreate: true })

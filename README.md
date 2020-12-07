@@ -144,6 +144,8 @@ Para se autenticar na API
 
 - [x] POST ​/professor​/agendamentos
 
+- [x] POST ​/professor​/servicos​/{idservico}​/agendamentos_responsavel
+
 ## Diretor
 
 - [x] POST ​/diretor​/relatorios

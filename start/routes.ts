@@ -92,6 +92,10 @@ Route.group(() => {
 Route.group(() => {
   Route.post('servicos/:idServico/agendamentos', 'AgendasController.professorAbrir')
   Route.get('servicos', 'ServicosController.getServicosProfessor')
+  Route.post(
+    'servicos/:idServico/agendamentos_responsavel',
+    'AgendasController.professorBuscarPorServico'
+  )
   Route.get(
     'servicos/:idServico/agendamentos/:idAgendamento',
     'AgendasController.professorDetalhes'

@@ -198,6 +198,7 @@ export default class AgendasController {
       await Agenda.createMany(agendas)
       return response.status(201)
     } catch (error) {
+      console.log({ error })
       return response
         .status(500)
         .send({ mensagem: 'Ocorreu um erro interno ao salvar as agendas!' })
@@ -255,6 +256,69 @@ export default class AgendasController {
         'justificativa_cancelamento',
         'atendido'
       )
+      .where('id_professor_responsavel', usuario.id)
+      .andWhereBetween('data_hora', [
+        DateTime.fromISO(data_inicial).toSQLDate(),
+        DateTime.fromISO(data_final).toSQLDate(),
+      ])
+
+    return agendas
+  }
+
+  public async professorBuscarPorServico({ request, response, params }: HttpContextContract) {
+    const { idServico } = params
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { data_inicial, data_final, usuario } = request.only([
+      'data_inicial',
+      'data_final',
+      'usuario',
+    ])
+
+    const schemaDaRequisicao = schema.create({
+      data_inicial: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+      data_final: schema.date({
+        format: 'yyyy-MM-dd',
+      }),
+    })
+
+    try {
+      await request.validate({
+        schema: schemaDaRequisicao,
+        messages: {
+          required: 'O campo {{ field }} é obrigatório',
+          format: 'É obrigatório que o campo {{ date }} esteja no formato {{ format }}',
+        },
+      })
+    } catch (erros) {
+      return response.badRequest({ mensagem: 'Dados inválidos!', erros })
+    }
+
+    const agendas = await Agenda.query()
+      .preload('cliente', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('professor_responsavel', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .preload('responsavel_cancelamento', (query) => {
+        query.select(['id', 'nome'])
+      })
+      .select(
+        'id',
+        'data_hora',
+        'id_servico',
+        'id_cliente',
+        'id_professor_responsavel',
+        'id_responsavel_cancelamento',
+        'atendente',
+        'observacao',
+        'justificativa_cancelamento',
+        'atendido'
+      )
+      .where('id_servico', idServico)
       .where('id_professor_responsavel', usuario.id)
       .andWhereBetween('data_hora', [
         DateTime.fromISO(data_inicial).toSQLDate(),
