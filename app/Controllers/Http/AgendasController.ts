@@ -520,6 +520,7 @@ export default class AgendasController {
       .select('id', 'data_hora', 'duracao', 'atendente')
       .whereBetween('data_hora', [mesInicial.toSQL(), mesFinal.toSQL()])
       .andWhereNull('id_cliente')
+      .where('id_servico', idServico)
 
     return agendas
   }
