@@ -225,6 +225,7 @@ export default class PostagensController {
       return response.badRequest({ error })
     }
   }
+
   public async coordenadorBuscar({ request }: HttpContextContract) {
     const { usuario } = request.only(['usuario'])
 
@@ -295,6 +296,7 @@ export default class PostagensController {
   }
 
   public async coordenadorEditar({ request, response, params }: HttpContextContract) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { titulo, mensagem, ativa, data_expiracao, usuario } = request.only([
       'titulo',
       'mensagem',
@@ -372,7 +374,7 @@ export default class PostagensController {
       return response.badRequest({ mensagem: 'A postagem selecionada não existe' })
     }
 
-    if (postagem.categoria.id_coordenador != usuario.id) {
+    if (postagem.categoria.id_coordenador !== usuario.id) {
       return response.forbidden({
         mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
       })
@@ -381,5 +383,42 @@ export default class PostagensController {
     await postagem.delete()
 
     return response.status(201)
+  }
+
+  public async getCoordenadorPostagemId({ request, response, params }: HttpContextContract) {
+    try {
+      const { usuario } = request.only(['usuario'])
+
+      const postagem = await Postagem.query()
+        .where('id', params.id)
+        .select([
+          'id',
+          'titulo',
+          'mensagem',
+          'ativa',
+          'data_expiracao',
+          'id_unidade',
+          'id_categoria',
+        ])
+        .first()
+
+      if (!postagem) {
+        return response.status(401).json({
+          mensagem: 'Postagem não encontrada',
+        })
+      }
+
+      const categoria = await Categoria.find(postagem.id_categoria)
+
+      if (categoria?.id_coordenador !== usuario.id) {
+        return response.forbidden({
+          mensagem: 'Você não tem permissão para acessar esta postagem',
+        })
+      }
+
+      return postagem
+    } catch (error) {
+      return response.badRequest({ error })
+    }
   }
 }

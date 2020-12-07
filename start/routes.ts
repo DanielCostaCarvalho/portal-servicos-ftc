@@ -78,6 +78,7 @@ Route.group(() => {
   )
   Route.post('servicos/:idServico/agendamentos', 'AgendasController.coordenadorAbrir')
   Route.post('postagens', 'PostagensController.coordenadorCriar')
+  Route.get('postagens/:id', 'PostagensController.getCoordenadorPostagemId')
   Route.get('postagens', 'PostagensController.coordenadorBuscar')
   Route.put('postagens/:idPostagem', 'PostagensController.coordenadorEditar')
   Route.delete('postagens/:idPostagem', 'PostagensController.coordenadorDeletar')

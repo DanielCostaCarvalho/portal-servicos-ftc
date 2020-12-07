@@ -116,6 +116,8 @@ Para se autenticar na API
 
 - [x] GET ​/coordenador​/postagens
 
+- [x] GET ​/coordenador​/postagens​/{idpostagem}
+
 - [x] POST ​/coordenador​/postagens
 
 - [x] PUT ​/coordenador​/postagens​/{idpostagem}
