@@ -16,7 +16,7 @@ export default class Postagem extends BaseModel {
   @column()
   public mensagem: string
 
-  @column()
+  @column({ consume: (value) => Boolean(value) })
   public ativa: boolean
 
   @column()

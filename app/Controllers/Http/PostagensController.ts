@@ -252,9 +252,9 @@ export default class PostagensController {
     const schemaDaRequisicao = schema.create({
       titulo: schema.string(),
       mensagem: schema.string(),
-      id_categoria: schema.number([rules.unsigned()]),
-      ativa: schema.boolean(),
-      data_expiracao: schema.date(),
+      id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
+      ...(ativa !== undefined && { ativa: schema.boolean() }),
+      ...(data_expiracao !== undefined && { data_expiracao: schema.date() }),
     })
 
     try {
@@ -296,20 +296,22 @@ export default class PostagensController {
 
   public async coordenadorEditar({ request, response, params }: HttpContextContract) {
     const { titulo, mensagem, ativa, data_expiracao, usuario } = request.only([
-      'dias',
-      'hora_inicial',
-      'hora_final',
-      'duracao',
+      'titulo',
+      'mensagem',
       'id_professor',
+      'id_categoria',
+      'data_expiracao',
       'usuario',
+      'ativa',
     ])
 
     const schemaDaRequisicao = schema.create({
       titulo: schema.string(),
       mensagem: schema.string(),
       id_categoria: schema.number([rules.exists({ table: 'categorias', column: 'id' })]),
-      ...(data.ativa !== undefined && { ativa: schema.boolean() }),
-      ...(data.data_expiracao !== undefined && { data_expiracao: schema.date() }),
+      ...(ativa !== undefined && { ativa: schema.boolean() }),
+      ...(data_expiracao !== undefined &&
+        data_expiracao !== null && { data_expiracao: schema.date() }),
     })
 
     try {
@@ -332,7 +334,7 @@ export default class PostagensController {
       return response.badRequest({ mensagem: 'A postagem selecionada não existe' })
     }
 
-    if (postagem.categoria.id_coordenador != usuario.id) {
+    if (postagem.categoria.id_coordenador !== usuario.id) {
       return response.forbidden({
         mensagem: 'Você não tem permissão para criar uma postagem para essa categoria',
       })
